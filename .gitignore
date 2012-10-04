@@ -1,9 +1,12 @@
+# Java and Eclipse Files #
 *.class
-
-*.DS_Store
 *.project
+*.classpath
 
 # Package Files #
 *.jar
 *.war
 *.ear
+
+# Misc Files #
+*.DS_Store
