@@ -5,6 +5,9 @@
  *
  */
 
+import java.util.ArrayList;
+import java.util.Date;
+
 /**
  * Event abstract superclass for all events
  * 
@@ -17,17 +20,24 @@ public abstract class Event {
     protected User[] attendees;
     protected User creator;
     
+    // TODO: maybe get rid of the default constructor? when would we use this?
     public Event() {
         name = "Event";
         location = "";
-        attendees = { User };
-        creator = User;
+    }
+    
+    public Event(String name, String location, User[] attendees, User creator){
+        this.name = name;
+        this.location = location;
+        this.attendees = attendees;
+        this.creator = creator;
     }
     
     /**
      * Gets all events within a certain time frame
      * 
-     * @return
+     * @return  an ArrayList of OneTimeEvent objects representing
+     *          the events in the given time interval
      */
-    public abstract OneTimeEvent[] getEvents(Date min, Date max);
+    public abstract ArrayList<OneTimeEvent> getEvents(Date min, Date max);
 }
