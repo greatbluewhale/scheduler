@@ -20,12 +20,6 @@ public abstract class Event {
     protected User[] attendees;
     protected User creator;
     
-    // TODO: maybe get rid of the default constructor? when would we use this?
-    public Event() {
-        name = "Event";
-        location = "";
-    }
-    
     public Event(String name, String location, User[] attendees, User creator){
         this.name = name;
         this.location = location;

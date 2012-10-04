@@ -11,15 +11,6 @@ public class OneTimeEvent extends Event {
     // protected User[] attendees;
     // protected User creator;
     
-    // TODO: maybe get rid of the default constructor? when would we use this?
-    /*
-    public OneTimeEvent() {
-        super();
-        start = Date.today;
-        end = start + 1 // hour 
-    }
-    */
-    
     public OneTimeEvent(String name, String location, User[] attendees, User creator, Date start, Date end) {
         super(name, location, attendees, creator);
         this.start = start;
