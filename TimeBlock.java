@@ -1,6 +1,12 @@
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+/**
+ * TimeBlock class stores a begin and end time in hr:min
+ * 
+ * @author Nicholas Dyszel
+ * @version 1.0, 8 Oct 2012
+ */
 public class TimeBlock {
     private int startHour;
     private int startMinute;

@@ -6,17 +6,33 @@ import java.util.Date;
  * (e.g. the 15th of every month from 10 - 11 am)
  * 
  * @author Nicholas Dyszel
- *
+ * @version 1.0, 7 Oct 2012
  */
 public class MonthlyDateRecurringEvent extends RecurringEvent {
     private int date;   // represents the date
     
+    /**
+     * Init constructor
+     * @param name          name of the event
+     * @param location      location of the event
+     * @param attendees     users attending event
+     * @param creator       creator of the event
+     * @param startHour     hour the event starts
+     * @param startMinute   minute the event starts
+     * @param endHour       hour the event ends
+     * @param endMinute     minute the event ends
+     * @param date          date of the month the event recurs on
+     */
     public MonthlyDateRecurringEvent(String name, String location, User[] attendees, User creator, 
             int startHour, int startMinute, int endHour, int endMinute, int date) {
         super(name, location, attendees, creator, startHour, startMinute, endHour, endMinute);
         this.date = date;
     }
     
+    /**
+     * Gets the first occurrence of the event after the start date
+     * @return the first event after start date
+     */
     @Override
     public Calendar getStartOfFirstEvent(Date start) {
         Calendar startOfEvent = super.getStartOfFirstEvent(start);
@@ -27,6 +43,9 @@ public class MonthlyDateRecurringEvent extends RecurringEvent {
         return startOfEvent;
     }
     
+    /**
+     * Sets time to that of the next event
+     */
     @Override
     public void nextEvent(Calendar time) {
         time.add(Calendar.MONTH, 1);
