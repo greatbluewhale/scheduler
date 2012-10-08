@@ -1,6 +1,7 @@
 import java.util.Calendar;
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 // TODO: Fill this class with meaningful content (right now it's just a placeholder)
 public class User {
@@ -43,13 +44,32 @@ public class User {
     public ArrayList<TimeBlock> getAvailability(Date day) {
         ArrayList<TimeBlock> netAvailability = new ArrayList<TimeBlock>();
         ArrayList<OneTimeEvent> oneEvent;
+        ArrayList<TimeBlock> busyTimes;
+        Date begin = day;
+        Date end = day;
+        Date eventStart;
+        Date eventEnd;
+        ListIterator<Event> it = events.listIterator();
+        
+        begin.setHours(0);
+        begin.setMinutes(0);
+        begin.setSeconds(0);
+        end.setHours(24);
+        end.setMinutes(0);
+        end.setSeconds(0);
         
         netAvailability.add(new TimeBlock(0, 0, 24, 0));
         
-        for (Event event : events) {
-            oneEvent = event.getEvents(min, max)
-            
-            TimeBlock.difference(netAvailability, event.times);
+        while (it.hasNext()) {
+            oneEvent = it.next().getEvents(begin, end);
+            busyTimes = new ArrayList<TimeBlock>();
+            for (OneTimeEvent event : oneEvent) {
+                eventStart = event.getStartDate();
+                eventEnd = event.getEndDate();
+                busyTimes.add(new TimeBlock(eventStart.getHours(), eventStart.getMinutes(),
+                                            eventEnd.getHours(), eventEnd.getMinutes()));
+            }
+            TimeBlock.difference(netAvailability, busyTimes);
         }
         
         return netAvailability;
