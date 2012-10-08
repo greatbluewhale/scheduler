@@ -10,7 +10,7 @@ import java.util.GregorianCalendar;
  * @author Amuthan
  *
  */
-public abstract class RecurringEvent extends Event{
+public abstract class RecurringEvent extends Event {
     protected int startHour;      // hour of the start time (0-23)
     protected int startMinute;    // minute of the start time (0-59)
     protected int endHour;        // hour of the end time (0-23)

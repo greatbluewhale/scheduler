@@ -8,7 +8,7 @@ import java.util.Date;
  * @author Amuthan
  *
  */
-public class WeeklyRecurringEvent extends RecurringEvent{
+public class WeeklyRecurringEvent extends RecurringEvent {
     private int dayOfWeek;  // represents day of the week 
                             // (Calendar.SUNDAY, Calendar.MONDAY, etc.)
     
