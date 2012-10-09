@@ -87,7 +87,7 @@ public class TimeBlock {
      * @param min2, minute of second time
      * @return true if hour1:min1 <= hour2:min2
      */
-    public static boolean isLessEq(int hour1, int min1, int hour2, int min2) {
+    private static boolean isLessEq(int hour1, int min1, int hour2, int min2) {
         return ((hour1 < hour2) || ((hour1 == hour2) && (min1 <= min2)));
     }
         

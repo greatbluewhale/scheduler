@@ -107,6 +107,25 @@ public class SchedulerTestDriver {
             System.out.println("Available times for " + userB.getName() + " after adjustments.");
             printAvailabilities(userB.getAvailability(cal));
             
+            // Create time block for 9:00-10:00 + 12:30-17:00
+            ArrayList<TimeBlock> testListA = new ArrayList<TimeBlock>();
+            testListA.add(new TimeBlock(9,0,10,0));
+            testListA.add(new TimeBlock(12,30,17,0));
+            // Create time block for 9:30-13:00
+            ArrayList<TimeBlock> testListB = new ArrayList<TimeBlock>();
+            testListB.add(new TimeBlock(9,30,13,0));
+            // Test the methods in TimeBlock.java
+            System.out.println("Printing list A, containing 9:00-10:00 and 12:30-17:00");
+            printAvailabilities(testListA);
+            System.out.println("Printing list B, containing 9:30-13:00");
+            printAvailabilities(testListB);
+            System.out.println("Printing intersection of lists A and B");
+            printAvailabilities(TimeBlock.intersect(testListA, testListB));
+            System.out.println("Printing complement of list A");
+            printAvailabilities(TimeBlock.complement(testListA));
+            System.out.println("Printing A minus B");
+            printAvailabilities(TimeBlock.difference(testListA, testListB));
+            
         } catch (Exception e){
             // Just print the error message
             System.out.println(e.getMessage());
