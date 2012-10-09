@@ -1,3 +1,10 @@
+/**
+ * Name:    Amuthan Narthana and Nicholas Dyszel
+ * Section: 2
+ * Program: Scheduler Project
+ * Date:    10/8/12
+ */
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -22,9 +29,10 @@ public class MonthlyDateRecurringEvent extends RecurringEvent {
      * @param endHour       hour the event ends
      * @param endMinute     minute the event ends
      * @param date          date of the month the event recurs on
+     * @throws Exception    if the arguments do not yield a valid time block
      */
     public MonthlyDateRecurringEvent(String name, String location, User[] attendees, User creator, 
-            int startHour, int startMinute, int endHour, int endMinute, int date) {
+            int startHour, int startMinute, int endHour, int endMinute, int date) throws Exception {
         super(name, location, attendees, creator, startHour, startMinute, endHour, endMinute);
         this.date = date;
     }
@@ -34,7 +42,7 @@ public class MonthlyDateRecurringEvent extends RecurringEvent {
      * @return the first event after start date
      */
     @Override
-    public Calendar getStartOfFirstEvent(Date start) {
+    protected Calendar getStartOfFirstEvent(Date start) {
         Calendar startOfEvent = super.getStartOfFirstEvent(start);
         startOfEvent.set(Calendar.DATE, date);
         if (start.after(startOfEvent.getTime())){
@@ -47,7 +55,7 @@ public class MonthlyDateRecurringEvent extends RecurringEvent {
      * Sets time to that of the next event
      */
     @Override
-    public void nextEvent(Calendar time) {
+    protected void nextEvent(Calendar time) {
         time.add(Calendar.MONTH, 1);
     }
 }

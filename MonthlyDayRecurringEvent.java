@@ -1,3 +1,10 @@
+/**
+ * Name:    Amuthan Narthana and Nicholas Dyszel
+ * Section: 2
+ * Program: Scheduler Project
+ * Date:    10/8/12
+ */
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -25,9 +32,10 @@ public class MonthlyDayRecurringEvent extends RecurringEvent {
      * @param endMinute     ending minute of event
      * @param dayOfWeek     day of week event recurs on
      * @param weekOfMonth   week of the month the event recurs on
+     * @throws Exception    if the arguments do not yield a valid time block
      */
     public MonthlyDayRecurringEvent(String name, String location, User[] attendees, User creator, 
-            int startHour, int startMinute, int endHour, int endMinute, int dayOfWeek, int weekOfMonth) {
+            int startHour, int startMinute, int endHour, int endMinute, int dayOfWeek, int weekOfMonth) throws Exception {
         super(name, location, attendees, creator, startHour, startMinute, endHour, endMinute);
         this.dayOfWeek = dayOfWeek;
         this.weekOfMonth = weekOfMonth;
@@ -38,7 +46,7 @@ public class MonthlyDayRecurringEvent extends RecurringEvent {
      * @return first event
      */
     @Override
-    public Calendar getStartOfFirstEvent(Date start) {
+    protected Calendar getStartOfFirstEvent(Date start) {
         Calendar startOfEvent = super.getStartOfFirstEvent(start);
         startOfEvent.set(Calendar.DAY_OF_WEEK, dayOfWeek);
         startOfEvent.set(Calendar.DAY_OF_WEEK_IN_MONTH, weekOfMonth);
@@ -52,7 +60,7 @@ public class MonthlyDayRecurringEvent extends RecurringEvent {
      * Sets time to the next event
      */
     @Override
-    public void nextEvent(Calendar time) {
+    protected void nextEvent(Calendar time) {
         time.add(Calendar.MONTH, 1);
         time.set(Calendar.DAY_OF_WEEK, dayOfWeek);
         time.set(Calendar.DAY_OF_WEEK_IN_MONTH, weekOfMonth);

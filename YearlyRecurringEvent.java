@@ -1,3 +1,10 @@
+/**
+ * Name:    Amuthan Narthana and Nicholas Dyszel
+ * Section: 2
+ * Program: Scheduler Project
+ * Date:    10/8/12
+ */
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -24,9 +31,10 @@ public class YearlyRecurringEvent extends RecurringEvent {
      * @param endMinute     minute of end time
      * @param month         month the event recurs in
      * @param date          date event recurs on
+     * @throws Exception    if the arguments do not yield a valid time block
      */
     public YearlyRecurringEvent(String name, String location, User[] attendees, User creator, 
-            int startHour, int startMinute, int endHour, int endMinute, int month, int date) {
+            int startHour, int startMinute, int endHour, int endMinute, int month, int date) throws Exception {
         super(name, location, attendees, creator, startHour, startMinute, endHour, endMinute);
         this.month = month;
         this.date = date;
@@ -37,7 +45,7 @@ public class YearlyRecurringEvent extends RecurringEvent {
      * @return first occurrence of event
      */
     @Override
-    public Calendar getStartOfFirstEvent(Date start) {
+    protected Calendar getStartOfFirstEvent(Date start) {
         Calendar startOfEvent = super.getStartOfFirstEvent(start);
         startOfEvent.set(Calendar.MONTH, month);
         startOfEvent.set(Calendar.DATE, date);
@@ -51,7 +59,7 @@ public class YearlyRecurringEvent extends RecurringEvent {
      * Sets time to the next event
      */
     @Override
-    public void nextEvent(Calendar time) {
+    protected void nextEvent(Calendar time) {
         time.add(Calendar.YEAR, 1);
     }
 }

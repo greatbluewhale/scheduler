@@ -1,3 +1,10 @@
+/**
+ * Name:    Amuthan Narthana and Nicholas Dyszel
+ * Section: 2
+ * Program: Scheduler Project
+ * Date:    10/8/12
+ */
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,23 +18,32 @@ import java.util.GregorianCalendar;
  *
  */
 public abstract class RecurringEvent extends Event {
-    protected int startHour;      // hour of the start time (0-23)
-    protected int startMinute;    // minute of the start time (0-59)
-    protected int endHour;        // hour of the end time (0-23)
-    protected int endMinute;      // minute of the end time (0-59)
+    protected TimeBlock time;
     
+    /**
+     * Init constructor
+     * @param name          name of the event
+     * @param location      location of the event
+     * @param attendees     users attending event
+     * @param creator       creator of the event
+     * @param startHour     hour the event starts
+     * @param startMinute   minute the event starts
+     * @param endHour       hour the event ends
+     * @param endMinute     minute the event ends
+     * @throws Exception    if the arguments do not yield a valid time block
+     */
     public RecurringEvent(String name, String location, User[] attendees, User creator, 
-                          int startHour, int startMinute, int endHour, int endMinute){
+                          int startHour, int startMinute, int endHour, int endMinute) throws Exception {
         super(name, location, attendees, creator);
-        this.startHour = startHour;
-        this.startMinute = startMinute;
-        this.endHour = endHour;
-        this.endMinute = endMinute;
+        time = new TimeBlock(startHour, startMinute, endHour, endMinute);
     }
     
     /**
      * This method returns the start time of the first event after 
-     * the given Date. 
+     * the given Date. This method is meant to be overridden, but 
+     * the implementation in RecurringEvent will assume that the 
+     * event is a daily event (since this implementation is useful 
+     * for all of the subclasses of RecurringEvent).
      * 
      * Example:
      * Suppose the given date is Monday, Oct. 1 at 12:01am. 
@@ -38,11 +54,11 @@ public abstract class RecurringEvent extends Event {
      * @param start     the start of the time interval
      * @return          the time of the first event after 'start'
      */
-    public Calendar getStartOfFirstEvent(Date start) {
+    protected Calendar getStartOfFirstEvent(Date start) {
         Calendar startOfEvent = new GregorianCalendar();
         startOfEvent.setTime(start);
-        startOfEvent.set(Calendar.HOUR_OF_DAY, startHour);
-        startOfEvent.set(Calendar.MINUTE, startMinute);
+        startOfEvent.set(Calendar.HOUR_OF_DAY, time.getStartHour());
+        startOfEvent.set(Calendar.MINUTE, time.getStartMinute());
         if (start.after(startOfEvent.getTime())){
             startOfEvent.add(Calendar.DATE, 1);
         }
@@ -56,8 +72,18 @@ public abstract class RecurringEvent extends Event {
      * 
      * @param time  the Calendar object to be incremented (it will be modified)
      */
-    public abstract void nextEvent(Calendar time);
+    protected abstract void nextEvent(Calendar time);
     
+    /**
+     * This gets all events within a certain time frame.
+     * Example: If this is an event that occurs every Monday at 9:00, 
+     *          and if the time frame is from Mon. Oct. 1 to Wed. Oct. 31, 
+     *          then this function would return events at 9:00 on 
+     *          Oct. 1, Oct. 8. Oct. 15, Oct. 22, and Oct. 29.
+     * 
+     * @return  an ArrayList of OneTimeEvent objects representing
+     *          the events in the given time interval
+     */
     @Override
     public ArrayList<OneTimeEvent> getEvents(Date start, Date end){
         ArrayList<OneTimeEvent> list = new ArrayList<OneTimeEvent>();    // list of one-time events
@@ -66,8 +92,8 @@ public abstract class RecurringEvent extends Event {
         
         // Find the end of the first event
         endOfEvent.setTime(startOfEvent.getTime());
-        endOfEvent.set(Calendar.HOUR_OF_DAY, endHour);
-        endOfEvent.set(Calendar.MINUTE, endMinute);
+        endOfEvent.set(Calendar.HOUR_OF_DAY, time.getEndHour());
+        endOfEvent.set(Calendar.MINUTE, time.getEndMinute());
         
         // For each event time in the interval, add a one-time event
         while (end.after(startOfEvent.getTime())){

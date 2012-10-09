@@ -1,6 +1,13 @@
+/**
+ * Name:    Amuthan Narthana and Nicholas Dyszel
+ * Section: 2
+ * Program: Scheduler Project
+ * Date:    10/8/12
+ */
+
 import java.util.Calendar;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.ListIterator;
 
 /**
@@ -10,14 +17,17 @@ import java.util.ListIterator;
  * @version 1.0, 6 Oct 2012
  */
 public class User {
+    private static final int DEFAULT_START_AVAILABILITY = 8;    // 8:00 is the default start availability
+    private static final int DEFAULT_END_AVAILABILITY = 18;     // 18:00 is the default end availability
+    private static final int NUM_DAYS_IN_WEEK = 7;              // number of days in a week
+    
     private String name;                            // account username
     private String password;                        // account password
     private ArrayList<Event> events;                // user's events
-    private TimeBlock[] availability = new TimeBlock[7];   // user's weekly availability
-        // This is used for user's to control what times they are available during the day.
+    private TimeBlock[] availability = new TimeBlock[NUM_DAYS_IN_WEEK];   // user's weekly availability
+        // This is used for users to control what times they are available during the day.
         // For example, when sleeping at night, the user should be unavailable although the
         // user does not have a scheduled event at the time.
-        // This 2D array stores an array of 7 
     
     /**
      * Init constructor with default availability
@@ -28,8 +38,12 @@ public class User {
         this.name = name;
         this.password = password;
         events = new ArrayList<Event>();
-        for (TimeBlock timeBlock : availability) {
-            timeBlock = new TimeBlock(8, 0, 18, 0);
+        for (int i=0; i<availability.length; i++){
+            try {
+                availability[i] = new TimeBlock(DEFAULT_START_AVAILABILITY, 0, DEFAULT_END_AVAILABILITY, 0);
+            } catch (Exception e){
+                // Don't do anything, because the TimeBlock being created is definitely valid
+            }
         }
     }
     
@@ -43,7 +57,7 @@ public class User {
         this.name = name;
         this.password = password;
         events = new ArrayList<Event>();
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < NUM_DAYS_IN_WEEK; i++) {
             this.availability[i] = availability[i];
         }
     }
@@ -77,7 +91,7 @@ public class User {
      * @param newAvailability
      */
     public void setAvailability(TimeBlock[] newAvailability) {
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < NUM_DAYS_IN_WEEK; i++) {
             availability[i] = newAvailability[i];
         }
     }
@@ -87,37 +101,56 @@ public class User {
      * @param day   the given day
      * @return      a strictly sorted list of times the user is available
      */
-    public ArrayList<TimeBlock> getAvailability(Date day) {
+    public ArrayList<TimeBlock> getAvailability(Calendar day) {
         ArrayList<TimeBlock> netAvailability = new ArrayList<TimeBlock>();
         ArrayList<OneTimeEvent> oneEvent;
         ArrayList<TimeBlock> busyTimes;
-        Date begin = day;
-        Date end = day;
-        Date eventStart;
-        Date eventEnd;
+        int year = day.get(Calendar.YEAR);
+        int month = day.get(Calendar.MONTH);
+        int date = day.get(Calendar.DATE);
+        Calendar begin = new GregorianCalendar(year, month, date, 0, 0);
+        Calendar end = new GregorianCalendar(year, month, date, TimeBlock.MAX_HOUR, TimeBlock.MAX_MINUTE);
+        Calendar eventStart = new GregorianCalendar();
+        Calendar eventEnd = new GregorianCalendar();
         ListIterator<Event> it = events.listIterator();
         
-        begin.setHours(0);
-        begin.setMinutes(0);
-        begin.setSeconds(0);
-        end.setHours(24);
-        end.setMinutes(0);
-        end.setSeconds(0);
+        netAvailability.add(availability[day.get(Calendar.DAY_OF_WEEK)]);
         
-        netAvailability.add(availability[day.getDay()]);
-        
-        while (it.hasNext()) {
-            oneEvent = it.next().getEvents(begin, end);
-            busyTimes = new ArrayList<TimeBlock>();
-            for (OneTimeEvent event : oneEvent) {
-                eventStart = event.getStartDate();
-                eventEnd = event.getEndDate();
-                busyTimes.add(new TimeBlock(eventStart.getHours(), eventStart.getMinutes(),
-                                            eventEnd.getHours(), eventEnd.getMinutes()));
+        try {
+            while (it.hasNext()) {
+                oneEvent = it.next().getEvents(begin.getTime(), end.getTime());
+                busyTimes = new ArrayList<TimeBlock>();
+                for (OneTimeEvent event : oneEvent) {
+                    eventStart.setTime(event.getStartDate());
+                    eventEnd.setTime(event.getEndDate());
+                    busyTimes.add(new TimeBlock(eventStart.get(Calendar.HOUR_OF_DAY), eventStart.get(Calendar.MINUTE),
+                                                eventEnd.get(Calendar.HOUR_OF_DAY), eventEnd.get(Calendar.MINUTE)));
+                }
+                netAvailability = TimeBlock.difference(netAvailability, busyTimes);
             }
-            TimeBlock.difference(netAvailability, busyTimes);
+        } catch (Exception e){
+            // This Exception should never be thrown, so if it is thrown, print a 
+            // message to the console.
+            System.out.println(e.getMessage());
         }
         
+        
         return netAvailability;
+    }
+    
+    /**
+     * Getter for name
+     * @return  name of the user
+     */
+    public String getName(){
+        return name;
+    }
+    
+    /**
+     * Getter for password
+     * @return  user's password
+     */
+    public String getPassword(){
+        return password;
     }
 }

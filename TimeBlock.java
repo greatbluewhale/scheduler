@@ -1,3 +1,10 @@
+/**
+ * Name:    Amuthan Narthana and Nicholas Dyszel
+ * Section: 2
+ * Program: Scheduler Project
+ * Date:    10/8/12
+ */
+
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -8,10 +15,13 @@ import java.util.ListIterator;
  * @version 1.0, 8 Oct 2012
  */
 public class TimeBlock {
-    private int startHour;
-    private int startMinute;
-    private int endHour;
-    private int endMinute;
+    public static final int MAX_HOUR = 23;   // the maximum value of an int representing an hour
+    public static final int MAX_MINUTE = 59; // the maximum value of an int representing a minute
+    
+    private int startHour;      // the start hour of the time block (0-23)
+    private int startMinute;    // the start minute of the time block (0-59)
+    private int endHour;        // the end hour of the time block (0-23)
+    private int endMinute;      // the end minute of the time block (0-59)
     
     /**
      * Init constructor of a time block
@@ -20,14 +30,52 @@ public class TimeBlock {
      * @param startMinute, the minute of the start time
      * @param endHour, the hour of the end time
      * @param endMinute, the minute of the end time
+     * @throws Exception if the arguments do not yield a valid time block
      */
-    public TimeBlock(int startHour, int startMinute, int endHour, int endMinute) {
-        // PRE: 0 <= startHour <= endHour <= 24, 0 <= startMinute, endMinute < 60
+    public TimeBlock(int startHour, int startMinute, int endHour, int endMinute) throws Exception {
+        // PRE: 0 <= startHour <= endHour < 24, 0 <= startMinute, endMinute < 60
         // POST: A time block is created with the given parameters
-        this.startHour = startHour;
-        this.startMinute = startMinute;
-        this.endHour = endHour;
-        this.endMinute = endMinute;
+        if (startHour >= 0 && startMinute >= 0 && endHour <= MAX_HOUR && 
+            endMinute <= MAX_MINUTE && isLessEq(startHour, startMinute, endHour, endMinute)){
+            this.startHour = startHour;
+            this.startMinute = startMinute;
+            this.endHour = endHour;
+            this.endMinute = endMinute;
+        } else {
+            throw new Exception("Invalid time inputs in TimeBlock constructor");
+        }
+    }
+    
+    /**
+     * Getter for the start hour
+     * @return  the start hour of the time block
+     */
+    public int getStartHour(){
+        return startHour;
+    }
+    
+    /**
+     * Getter for the start minute
+     * @return  the start minute of the time block
+     */
+    public int getStartMinute(){
+        return startMinute;
+    }
+    
+    /**
+     * Getter for the end hour
+     * @return  the end hour of the time block
+     */
+    public int getEndHour(){
+        return endHour;
+    }
+    
+    /**
+     * Getter for the end minute
+     * @return  the end minute of the time block
+     */
+    public int getEndMinute(){
+        return endMinute;
     }
     
     /**
@@ -49,11 +97,12 @@ public class TimeBlock {
      * { 9:30 - 11:00, 13:00 - 14:00, 14:30 - 15:30, 16:30 - 18:00}, the intersection contains
      * { 10:00 - 11:00, 14:30 - 15:30, 16:30 - 17:00 }
      * 
-     * @param block1, the first set of time blocks
-     * @param block2, the second set of time blocks
-     * @return the intersection of block1 and block2
+     * @param timeBlocks1   the first set of time blocks
+     * @param timeBlocks2   the second set of time blocks
+     * @return              the intersection of block1 and block2
+     * @throws Exception    if the ArrayList of TimeBlocks aren't sorted, it may lead to an Exception
      */
-    public static ArrayList<TimeBlock> intersect(ArrayList<TimeBlock> timeBlocks1, ArrayList<TimeBlock> timeBlocks2) {
+    public static ArrayList<TimeBlock> intersect(ArrayList<TimeBlock> timeBlocks1, ArrayList<TimeBlock> timeBlocks2) throws Exception {
         // PRE: block1 and block2 are both strictly sorted
         // POST: intersection contains time blocks in the intersection of block1 and block2 and is strictly sorted
         ArrayList<TimeBlock> intersection = new ArrayList<TimeBlock>();
@@ -113,12 +162,14 @@ public class TimeBlock {
     /**
      * Computes the difference between two sets
      * e.g. If minuend is { 8:00 - 20:00 } and subtrahend is { 10:00 - 12:00, 13:30 - 15:00 },
+     *      then the difference is { 8:00 - 10:00, 12:00 - 13:30, 15:00 - 20:00}.
      * 
-     * @param minuend, the set to subtract from
-     * @param subtrahend, the subtracted set
-     * @return the difference of minuend - subtrahend
+     * @param minuend       the set to subtract from
+     * @param subtrahend    the subtracted set
+     * @return              the difference of minuend - subtrahend
+     * @throws Exception    if the ArrayList of TimeBlocks aren't sorted, it may lead to an Exception
      */
-    public static ArrayList<TimeBlock> difference(ArrayList<TimeBlock> minuend, ArrayList<TimeBlock> subtrahend) {
+    public static ArrayList<TimeBlock> difference(ArrayList<TimeBlock> minuend, ArrayList<TimeBlock> subtrahend) throws Exception {
         return intersect(minuend, complement(subtrahend));
     }
     
@@ -127,10 +178,11 @@ public class TimeBlock {
      * e.g. If the input set is { 6:00 - 8:00, 14:00 - 17:00, 22:00 - 24:00 }, its complement is
      * { 0:00 - 6:00, 8:00 - 14:00, 17:00 - 22:00 }
      * 
-     * @param set, the input set
-     * @return the complement of set
+     * @param set   the input set
+     * @return      the complement of set
+     * @throws Exception if the ArrayList of TimeBlocks aren't sorted, it may lead to an Exception
      */
-    public static ArrayList<TimeBlock> complement(ArrayList<TimeBlock> set) {
+    public static ArrayList<TimeBlock> complement(ArrayList<TimeBlock> set) throws Exception {
         // PRE: set is strictly sorted
         // POST: setComplement is strictly sorted and contains the time blocks opposite of set
         ArrayList<TimeBlock> setComplement = new ArrayList<TimeBlock>();
@@ -138,9 +190,9 @@ public class TimeBlock {
         
         for (TimeBlock block : set) {
             setComplement.add(new TimeBlock(previousBlock.endHour, previousBlock.endMinute, block.startHour, block.startMinute));
-            block = previousBlock;
+            previousBlock = block;
         }
-        setComplement.add(new TimeBlock(previousBlock.endHour, previousBlock.endMinute, 24, 0));
+        setComplement.add(new TimeBlock(previousBlock.endHour, previousBlock.endMinute, MAX_HOUR, MAX_MINUTE));
         
         // Remove time blocks that have same start and end time
         for (TimeBlock block : setComplement) {
@@ -150,5 +202,16 @@ public class TimeBlock {
         }
         
         return setComplement;
+    }
+    
+    /**
+     * This method overrides the toString method of Object, and returns the 
+     * time block represented as a String (e.g. 12:30-17:30).
+     */
+    @Override
+    public String toString(){
+        String startMin = ((startMinute < 10) ? "0" : "") + startMinute;
+        String endMin = ((endMinute < 10) ? "0" : "") + endMinute;
+        return startHour + ":" + startMin + "-" + endHour + ":" + endMin;
     }
 }
