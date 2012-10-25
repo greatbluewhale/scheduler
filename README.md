@@ -1,4 +1,4 @@
 scheduler
 =========
 
-SQL Database and Java Client for a scheduling and calendar application.
+SQL Database and Java Client for an **awesome** scheduling and calendar application.
