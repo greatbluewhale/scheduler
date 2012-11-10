@@ -51,7 +51,7 @@ public class MonthlyDayRecurringEvent extends RecurringEvent {
         startOfEvent.set(Calendar.DAY_OF_WEEK, dayOfWeek);
         startOfEvent.set(Calendar.DAY_OF_WEEK_IN_MONTH, weekOfMonth);
         if (start.after(startOfEvent.getTime())){
-            startOfEvent.add(Calendar.MONTH, 1);
+            nextEvent(startOfEvent);
         }
         return startOfEvent;
     }

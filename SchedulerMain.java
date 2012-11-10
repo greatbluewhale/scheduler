@@ -1,8 +1,11 @@
 
 public class SchedulerMain {
     
+    public static SchedulerApplication application;
+    
     public static void main(String[] args){
-        SchedulerApplication application = new SchedulerApplication();
+        application = new SchedulerApplication();
+        application.startup();
         application.setVisible(true);
     }
 }

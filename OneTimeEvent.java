@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * 
  * @author Nick
  */
-public class OneTimeEvent extends Event {
+public class OneTimeEvent extends Event implements Comparable<OneTimeEvent> {
     private Date start; // the start time of the event
     private Date end;   // the end time of the event
     
@@ -61,5 +61,10 @@ public class OneTimeEvent extends Event {
             list.add(this);
         }
         return list;
+    }
+
+    @Override
+    public int compareTo(OneTimeEvent other) {
+        return this.start.compareTo(other.start);
     }
 }

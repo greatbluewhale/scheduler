@@ -3,8 +3,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 
 @SuppressWarnings("serial")
 public class MonthlyViewPage extends JPanel implements ActionListener{
@@ -73,25 +77,58 @@ public class MonthlyViewPage extends JPanel implements ActionListener{
     }
     
     private void loadMonth(){
-        Calendar calendar = new GregorianCalendar();
         int numWeeksInMonth = month.getActualMaximum(Calendar.WEEK_OF_MONTH);
         int calendarMonth = month.get(Calendar.MONTH);
+        Calendar calendar = new GregorianCalendar();
+        Date today = calendar.getTime();
+        
+        // Update month label and clear calendar
         monthLabel.setText(MONTH_FORMAT.format(month.getTime()));
         calendarPanel.setVisible(false);
         calendarPanel.removeAll();
         
+        // Set up grid
         calendarPanel.setLayout(new GridLayout(numWeeksInMonth, DAYS_IN_WEEK));
         cells = new CalendarCell[DAYS_IN_WEEK*numWeeksInMonth];
         
-        calendar.set(month.get(Calendar.YEAR), calendarMonth, 1);
-        // TODO: Calling getTime is just a hack to get calendar to properly
-        // load the time.
-        calendar.getTime();
+        // Get the first Sunday of the calendar (not necessarily the 1st of the month)
+        calendar.set(month.get(Calendar.YEAR), calendarMonth, 1, 0, 0);
+        calendar.getTime(); // hack
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        
+        // Get a sorted list of relevant OneTimeEvent objects
+        Date start = calendar.getTime();
+        calendar.add(Calendar.DATE, DAYS_IN_WEEK*numWeeksInMonth);
+        Date end = calendar.getTime();
+        ArrayList<OneTimeEvent> events = new ArrayList<OneTimeEvent>();
+        Iterator<Event> userEventsIt = SchedulerMain.application.currentUser.getEvents().iterator();
+        while (userEventsIt.hasNext()){
+            Iterator<OneTimeEvent> oneTimeEventIt = userEventsIt.next().getEvents(start, end).iterator();
+            while (oneTimeEventIt.hasNext()){
+                events.add(oneTimeEventIt.next());
+            }
+        }
+        Collections.sort(events);
+        
+        boolean todayIsInRange = today.after(start) && today.before(end);
+        
+        // Start at the first Sunday of the calendar
+        calendar.set(month.get(Calendar.YEAR), calendarMonth, 1, 0, 0);
+        calendar.getTime(); // hack
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        Iterator<OneTimeEvent> eventsIt = events.iterator();
+        OneTimeEvent currentEvent = eventsIt.hasNext() ? eventsIt.next() : null;
         for (int cellIndex=0; cellIndex<numWeeksInMonth*DAYS_IN_WEEK; cellIndex++){
+            // Create a new CalendarCell object
             cells[cellIndex] = new CalendarCell(calendar, (calendar.get(Calendar.MONTH) == calendarMonth));
             calendarPanel.add(cells[cellIndex]);
+            
+            // Add events to the cell if necessary
             calendar.add(Calendar.DATE, 1);
+            while (currentEvent != null && currentEvent.getStartDate().before(calendar.getTime())){
+                cells[cellIndex].addEvent(currentEvent);
+                currentEvent = eventsIt.hasNext() ? eventsIt.next() : null;
+            }
         }
         calendarPanel.setVisible(true);
     }
