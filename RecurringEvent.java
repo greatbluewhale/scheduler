@@ -19,7 +19,9 @@ import java.util.GregorianCalendar;
  */
 public abstract class RecurringEvent extends Event {
     protected TimeBlock time;
-    
+    protected Calendar startInterval;
+    protected Calendar endInterval;
+        
     /**
      * Init constructor
      * @param name          name of the event
@@ -33,9 +35,23 @@ public abstract class RecurringEvent extends Event {
      * @throws Exception    if the arguments do not yield a valid time block
      */
     public RecurringEvent(String name, String location, User[] attendees, User creator, 
-                          int startHour, int startMinute, int endHour, int endMinute) throws Exception {
+                          int startHour, int startMinute, int endHour, int endMinute, Calendar startInterval, Calendar endInterval) throws Exception {
         super(name, location, attendees, creator);
         time = new TimeBlock(startHour, startMinute, endHour, endMinute);
+        this.startInterval = startInterval;
+        this.endInterval = endInterval;
+    }
+    
+    public Calendar getIntervalStart() {
+        return startInterval;
+    }
+    
+    public Calendar getIntervalEnd() {
+        return endInterval;
+    }
+    
+    public TimeBlock getTimes() {
+        return time;
     }
     
     /**

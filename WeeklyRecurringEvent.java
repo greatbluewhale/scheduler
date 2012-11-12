@@ -33,8 +33,8 @@ public class WeeklyRecurringEvent extends RecurringEvent {
      * @throws Exception    if the arguments do not yield a valid time block
      */
     public WeeklyRecurringEvent(String name, String location, User[] attendees, User creator, 
-                               int startHour, int startMinute, int endHour, int endMinute, int dayOfWeek) throws Exception{
-        super(name, location, attendees, creator, startHour, startMinute, endHour, endMinute);
+                               int startHour, int startMinute, int endHour, int endMinute, int dayOfWeek, Calendar startInterval, Calendar endInterval) throws Exception{
+        super(name, location, attendees, creator, startHour, startMinute, endHour, endMinute, startInterval, endInterval);
         this.dayOfWeek = dayOfWeek;
     }
     

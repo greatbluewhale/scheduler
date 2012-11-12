@@ -32,8 +32,8 @@ public class MonthlyDateRecurringEvent extends RecurringEvent {
      * @throws Exception    if the arguments do not yield a valid time block
      */
     public MonthlyDateRecurringEvent(String name, String location, User[] attendees, User creator, 
-            int startHour, int startMinute, int endHour, int endMinute, int date) throws Exception {
-        super(name, location, attendees, creator, startHour, startMinute, endHour, endMinute);
+            int startHour, int startMinute, int endHour, int endMinute, int date, Calendar startInterval, Calendar endInterval) throws Exception {
+        super(name, location, attendees, creator, startHour, startMinute, endHour, endMinute, startInterval, endInterval);
         this.date = date;
     }
     

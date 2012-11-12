@@ -5,6 +5,7 @@
  * Date:    10/8/12
  */
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * This class represents an event that occurs every day 
@@ -28,8 +29,8 @@ public class DailyRecurringEvent extends RecurringEvent {
      * @throws Exception    if the arguments do not yield a valid time block
      */
     public DailyRecurringEvent(String name, String location, User[] attendees, User creator, 
-                               int startHour, int startMinute, int endHour, int endMinute) throws Exception{
-        super(name, location, attendees, creator, startHour, startMinute, endHour, endMinute);
+                               int startHour, int startMinute, int endHour, int endMinute, Calendar startInterval, Calendar endInterval) throws Exception{
+        super(name, location, attendees, creator, startHour, startMinute, endHour, endMinute, startInterval, endInterval);
     }
     
     /**
