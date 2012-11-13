@@ -5,7 +5,6 @@
  * Date:    10/8/12
  */
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * This class represents an event that occurs every day 

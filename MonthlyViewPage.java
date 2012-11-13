@@ -11,7 +11,7 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 
 @SuppressWarnings("serial")
-public class MonthlyViewPage extends JPanel implements ActionListener{
+public class MonthlyViewPage extends PagePanel implements ActionListener{
     
     private static final SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("MMMM yyyy");
     private static final int DAYS_IN_WEEK = 7;
@@ -37,16 +37,7 @@ public class MonthlyViewPage extends JPanel implements ActionListener{
     
     private Calendar month;
     
-    public MonthlyViewPage(Calendar monthInit){
-        super();
-        
-        month = monthInit;
-        monthLabel.setFont(new Font("Arial", Font.BOLD, MONTH_STRING_SIZE));
-        loadMonth();
-        
-        previous.addActionListener(this);
-        next.addActionListener(this);
-        
+    public MonthlyViewPage(){
         setLayout(new BorderLayout());
         add(topPanel, BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);
@@ -60,13 +51,24 @@ public class MonthlyViewPage extends JPanel implements ActionListener{
         mainPanel.add(weekLabelPanel, BorderLayout.NORTH);
         mainPanel.add(calendarPanel, BorderLayout.CENTER);
         
+        monthLabel.setFont(new Font(monthLabel.getFont().getFontName(), Font.BOLD, MONTH_STRING_SIZE));
+        previous.addActionListener(this);
+        next.addActionListener(this);
+        
         weekLabelPanel.setLayout(new GridLayout(1, DAYS_IN_WEEK));
         for (String dayName : NAMES_OF_DAYS){
             weekLabelPanel.add(new JLabel(dayName, SwingConstants.CENTER));
         }
+        
+        month = new GregorianCalendar();
     }
     
-    public void changeMonth(boolean increase){
+    @Override
+    public void activate(){
+        loadMonth();
+    }
+    
+    private void changeMonth(boolean increase){
         month.add(Calendar.MONTH, increase ? 1 : -1);
         loadMonth();
     }
@@ -80,7 +82,6 @@ public class MonthlyViewPage extends JPanel implements ActionListener{
         int numWeeksInMonth = month.getActualMaximum(Calendar.WEEK_OF_MONTH);
         int calendarMonth = month.get(Calendar.MONTH);
         Calendar calendar = new GregorianCalendar();
-        Date today = calendar.getTime();
         
         // Update month label and clear calendar
         monthLabel.setText(MONTH_FORMAT.format(month.getTime()));
@@ -109,8 +110,6 @@ public class MonthlyViewPage extends JPanel implements ActionListener{
             }
         }
         Collections.sort(events);
-        
-        boolean todayIsInRange = today.after(start) && today.before(end);
         
         // Start at the first Sunday of the calendar
         calendar.set(month.get(Calendar.YEAR), calendarMonth, 1, 0, 0);
