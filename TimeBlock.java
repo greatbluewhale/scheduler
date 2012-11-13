@@ -50,15 +50,31 @@ public class TimeBlock {
      * Getter for the start hour
      * @return  the start hour of the time block
      */
-    public int getStartHour(){
+    public int getStartHour() {
         return startHour;
+    }
+    
+    /**
+     * Getter for start hour in 12-hour clock
+     * @return  the start hour
+     */
+    public int getStartHourAP() {
+        return militaryToAP(startHour);
+    }
+    
+    /**
+     * Gets whether start time is in p.m.
+     * @return  1 if start time is in p.m., 0 otherwise
+     */
+    public int isStartPM() {
+        return isPM(startHour);
     }
     
     /**
      * Getter for the start minute
      * @return  the start minute of the time block
      */
-    public int getStartMinute(){
+    public int getStartMinute() {
         return startMinute;
     }
     
@@ -66,16 +82,146 @@ public class TimeBlock {
      * Getter for the end hour
      * @return  the end hour of the time block
      */
-    public int getEndHour(){
+    public int getEndHour() {
         return endHour;
+    }
+    
+    /**
+     * Getter for end hour using 12-hour clock
+     * @return  the end hour
+     */
+    public int getEndHourAP() {
+        return militaryToAP(endHour);
+    }
+    
+    /**
+     * Gets whether end time is in p.m. 
+     * @return  1 if end time is in p.m., 0 otherwise
+     */
+    public int isEndPM() {
+        return isPM(endHour);
     }
     
     /**
      * Getter for the end minute
      * @return  the end minute of the time block
      */
-    public int getEndMinute(){
+    public int getEndMinute() {
         return endMinute;
+    }
+    
+    /**
+     * Setter for start hour
+     * @param newStartHour  hour of start time
+     * @throws Exception  hour is out of range
+     */
+    public void setStartHour(int newStartHour) throws Exception {
+        if (isLessEq(newStartHour, startMinute, endHour, endMinute)) {
+            startHour = newStartHour;          
+        } else {
+            throw new Exception("Invalid hour");
+        }
+    }
+    
+    /**
+     * Setter for start hour using 12-hour clock
+     * @param hour12  hour of start time
+     * @param isPM    true if hour is in pm, false if am
+     * @throws Exception  hour is out of range
+     */
+    public void setStartHourAP(int hour12, boolean isPM) throws Exception {
+        setStartHour(apToMilitary(hour12, isPM));
+    }
+    
+    /**
+     * Setter for start minute
+     * @param newStartMinute  minute of start time
+     * @throws Exception  minute is out of range
+     */
+    public void setStartMinute(int newStartMinute) throws Exception {
+        if (isLessEq(startHour, newStartMinute, endHour, endMinute)) {
+            startMinute = newStartMinute;
+        } else {
+            throw new Exception("Invalid minute");
+        }
+    }
+    
+    /**
+     * Setter for end hour
+     * @param newEndHour  hour of end time
+     * @throws Exception  hour is out of range
+     */
+    public void setEndHour(int newEndHour) throws Exception {
+        if (isLessEq(startHour, startMinute, newEndHour, endMinute)) {
+            endHour = newEndHour;          
+        } else {
+            throw new Exception("Invalid hour");
+        }
+    }
+    
+    /**
+     * Setter for end hour using 12-hour clock
+     * @param hour12  hour of end time
+     * @param isPM    true if hour is pm, false if am
+     * @throws Exception  hour is out of range
+     */
+    public void setEndHourAP(int hour12, boolean isPM) throws Exception {
+        setEndHour(apToMilitary(hour12, isPM));
+    }
+    
+    /**
+     * Setter for end minute
+     * @param newEndMinute  minute of end time
+     * @throws Exception  minute is out of range
+     */
+    public void setEndMinute(int newEndMinute) throws Exception {
+        if (isLessEq(startHour, startMinute, endHour, newEndMinute)) {
+            endMinute = newEndMinute;          
+        } else {
+            throw new Exception("Invalid hour");
+        }
+    }
+    
+    /**
+     * Converts 12-hour time to 24-hour time
+     * @param hour12  hour to convert
+     * @param isPM    true if hour is in pm, false if in am
+     * @return  hour in 24-hour time
+     */
+    public static int apToMilitary(int hour12, boolean isPM) {
+        int hour24;
+        if (hour12 == 12) {
+            hour24 = 0;
+        } else {
+            hour24 = hour12;
+        }
+        if (isPM) {
+            hour24 += 12;
+        }
+        return hour24;
+    }
+    
+    /**
+     * Converts 24-hour time to 12-hour time
+     * NOTE: Use isPM() to get whether hour is am or pm
+     * @param hour24  hour to convert
+     * @return  hour in 12-hour time
+     */
+    public static int militaryToAP(int hour24) {
+        int hour12 = hour24 % 12;
+        if (hour12 == 0) {
+            hour12 = 12;
+        }
+        return hour12;
+    }
+    
+    /**
+     * Determines whether a 24-hour time is am or pm
+     * @param hour24  hour to determine
+     * @return  1 if pm, 0 if am
+     */
+    public static int isPM(int hour24) {
+        return (hour24 >= 12) ? 1 : 0;
     }
     
     /**
