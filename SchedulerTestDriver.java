@@ -25,18 +25,18 @@ public class SchedulerTestDriver {
      * This prints the TimeBlock objects in the ArrayList parameter.
      * @param availabilities    an ArrayList of TimeBlocks representing availabilities
      */
-    private static void printAvailabilities(ArrayList<TimeBlock> availabilities){
+    /* private static void printAvailabilities(ArrayList<TimeBlock> availabilities){
         Iterator<TimeBlock> it = availabilities.iterator();
         while (it.hasNext()){
             System.out.println(it.next());
         }
         System.out.println();
-    }
+    } */
     
     /**
      * This is the main method of the test driver.
      */
-    public static void main(String[] args){
+    /* public static void main(String[] args){
         try {
             // Set the interval from Oct. 8 at 11am until Dec. 30 at 10am
             GregorianCalendar cal = new GregorianCalendar();
@@ -132,4 +132,5 @@ public class SchedulerTestDriver {
         }
         
     }
+    */
 }

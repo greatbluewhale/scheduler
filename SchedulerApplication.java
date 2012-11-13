@@ -28,7 +28,7 @@ public class SchedulerApplication extends JFrame {
         
         // TODO: temporary
         currentUser = new User("Test User", "letmein");
-        try {
+        /* try {
             Calendar cal = new GregorianCalendar();
             cal.set(2012, Calendar.NOVEMBER, 15);
             currentUser.addEvent(new OneTimeEvent("Project Due Date", null, null, currentUser, cal.getTime(), cal.getTime()));
@@ -39,11 +39,16 @@ public class SchedulerApplication extends JFrame {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        } */
         
-        currentPage = new MonthlyViewPage(new GregorianCalendar());
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(currentPage, BorderLayout.CENTER);
+        try {
+            Calendar cal = new GregorianCalendar();
+            cal.set(2012, Calendar.NOVEMBER, 15);
+            currentPage = new EditEventPage(new OneTimeEvent("Project Due Date", null, null, currentUser, cal.getTime(), cal.getTime()));
+            mainPanel.setLayout(new BorderLayout());
+            mainPanel.add(currentPage, BorderLayout.CENTER);
+        }
+        catch (Exception e) {}
         
         setSize(STARTING_WIDTH, STARTING_HEIGHT);
         setMinimumSize(new Dimension(MINIMUM_WIDTH, MINIMUM_HEIGHT));

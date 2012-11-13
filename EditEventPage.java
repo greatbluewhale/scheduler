@@ -60,9 +60,9 @@ public class EditEventPage extends JPanel implements ActionListener, ItemListene
      * Default constructor
      * Creates new event
      */
-    public EditEventPage() {
+    /* public EditEventPage() {
         this(new OneTimeEvent("", "", { getUser() }, getUser(), new Date(), new Date()));
-    }
+    } */
     
     /**
      * Init constructor
