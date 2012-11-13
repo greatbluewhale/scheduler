@@ -1,12 +1,48 @@
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 
 import javax.swing.*;
 
 @SuppressWarnings("serial")
-public class CalendarCell extends JPanel {
+public class CalendarCell extends JPanel implements MouseListener {
     
     private static final Color NOT_IN_MONTH_COLOR = new Color(220, 220, 220);
+    private static final int DATE_SIZE = 20;
+    
+    private static class EventLabel{
+        public OneTimeEvent event;
+        public JLabel label;
+        public EventLabel(OneTimeEvent event, JLabel label){
+            this.event = event;
+            this.label = label;
+        }
+    }
+    
+    private static JPopupMenu popup;
+    private static EventLabel selectedEventLabel;
+    
+    // This static initialization block is executed exactly once (at the start of the program)
+    static {
+        popup = new JPopupMenu();
+        JMenuItem editEvent = new JMenuItem("Edit Event");
+        popup.add(editEvent);
+        editEvent.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO: Open the edit event page
+                System.out.println(selectedEventLabel.event.name);
+            }
+        });
+    }
+    
+    private ArrayList<EventLabel> list = new ArrayList<EventLabel>(0);
     
     public CalendarCell(Calendar calendar, boolean isInMonth){
         // Calendar calendar will be modified outside of this class, so do NOT 
@@ -15,10 +51,58 @@ public class CalendarCell extends JPanel {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         JLabel dayNumberLabel = new JLabel(""+calendar.get(Calendar.DATE));
+        dayNumberLabel.setFont(new Font(dayNumberLabel.getFont().getFontName(), Font.BOLD, DATE_SIZE));
         add(dayNumberLabel);
     }
     
     public void addEvent(OneTimeEvent event){
-        add(new JLabel(event.getName()));
+        JLabel label = new JLabel(event.getName());
+        add(label);
+        list.add(new EventLabel(event, label));
+        label.addMouseListener(this);
     }
+    
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1){
+            Iterator<EventLabel> it = list.iterator();
+            while (it.hasNext()){
+                EventLabel el = it.next();
+                if (e.getSource() == el.label){
+                    // TODO: open event
+                    System.out.println(el.event.name);
+                    break;
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void mousePressed(MouseEvent e) {
+        checkForTriggerEvent(e);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        checkForTriggerEvent(e);
+    }
+    
+    public void checkForTriggerEvent(MouseEvent e){
+        if (e.isPopupTrigger()){
+            Iterator<EventLabel> it = list.iterator();
+            while (it.hasNext()){
+                EventLabel el = it.next();
+                if (e.getSource() == el.label){
+                    selectedEventLabel = el;
+                    break;
+                }
+            }
+            popup.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
+    
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+    @Override
+    public void mouseExited(MouseEvent e) {}
 }

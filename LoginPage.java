@@ -43,6 +43,7 @@ public class LoginPage extends PagePanel implements ActionListener {
         invalidLoginPanel.add(invalidLogin);
         invalidLogin.setForeground(Color.RED);
         
+        passwordField.addActionListener(this);
         submit.addActionListener(this);
     }
     
@@ -54,6 +55,7 @@ public class LoginPage extends PagePanel implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent event) {
+        // If the event originated from passwordField or submit button, then try to log in
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
         if (username.compareTo(SchedulerMain.testUsername) == 0 && password.compareTo(SchedulerMain.testPassword) == 0){
