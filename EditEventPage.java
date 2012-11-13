@@ -70,6 +70,8 @@ public class EditEventPage extends JPanel implements ActionListener, ItemListene
      * @throws Exception  a TimeBlock exception
      */
     public EditEventPage(Event eventToEdit) throws Exception {
+        super();
+        
         Calendar tempEnd;
         
         newEvent = eventToEdit;
