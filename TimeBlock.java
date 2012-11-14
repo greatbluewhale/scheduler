@@ -6,6 +6,7 @@
  */
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.ListIterator;
 
 /**
@@ -22,6 +23,18 @@ public class TimeBlock {
     private int startMinute;    // the start minute of the time block (0-59)
     private int endHour;        // the end hour of the time block (0-23)
     private int endMinute;      // the end minute of the time block (0-59)
+    
+    /**
+     * Default time block
+     * 1 hour period starting at next hour
+     */
+    public TimeBlock() {
+        Calendar today = Calendar.getInstance();
+        startHour = today.get(Calendar.HOUR) + 1;
+        startMinute = 0;
+        endHour = today.get(Calendar.HOUR) + 2;
+        endMinute = 0;
+    }
     
     /**
      * Init constructor of a time block

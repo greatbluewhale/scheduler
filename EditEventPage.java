@@ -18,8 +18,8 @@ import javax.swing.*;
  * @author Nicholas Dyszel
  * @version 1.0  11/1/2012
  */
-public class EditEventPage extends JPanel implements ActionListener, ItemListener {
-    private Event      newEvent;            // event object to create / edit
+public class EditEventPage extends PagePanel implements ActionListener, ItemListener {
+//    private Event      newEvent;            // event object to create / edit
     private String     title;               // object to store title
     private JTextField titleField;          // text field for user to enter title
     private String     location;            // object to store location
@@ -47,9 +47,11 @@ public class EditEventPage extends JPanel implements ActionListener, ItemListene
     private JComboBox  stopMonthDropDown;
     private JTextField stopDayField;
     private JTextField stopYearField;
+    private JButton    ok;
+    private JButton    cancel;
     
     // enumeration of different recurring event types
-    private enum RecurType { DAILY, WEEKLY, MONTHLY_BY_DATE, MONTHLY_BY_DAY, YEARLY };
+    private static enum RecurType { DAILY, WEEKLY, MONTHLY_BY_DATE, MONTHLY_BY_DAY, YEARLY };
     
     private static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
                                             "Sep", "Oct", "Nov", "Dec"};
@@ -57,27 +59,152 @@ public class EditEventPage extends JPanel implements ActionListener, ItemListene
                                                  "Monthly (by Day)", "Yearly"};
     
     /**
-     * Default constructor
-     * Creates new event
-     */
-    /* public EditEventPage() {
-        this(new OneTimeEvent("", "", { getUser() }, getUser(), new Date(), new Date()));
-    } */
-    
-    /**
      * Init constructor
      * Edits an existing event
      * @throws Exception  a TimeBlock exception
      */
-    public EditEventPage(Event eventToEdit) throws Exception {
+    public EditEventPage() {
         super();
         
-        Calendar tempEnd;
+        title = "";
+        add(new JLabel("Name:"));
+        titleField = new JTextField(30);
+        titleField.addActionListener(this);
+        add(titleField);
         
-        newEvent = eventToEdit;
+        location = "";
+        add(new JLabel("Location:"));
+        locationField = new JTextField(30);
+        locationField.addActionListener(this);
+        add(locationField);
+        
+        date = new GregorianCalendar();
+        add(new JLabel("Date:"));
+        monthDropDown = new JComboBox(MONTHS);
+        monthDropDown.addActionListener(this);
+        add(monthDropDown);
+        dayField = new JTextField(2);
+        dayField.addActionListener(this);
+        add(dayField);
+        add(new JLabel(","));
+        yearField = new JTextField(4);
+        yearField.addActionListener(this);
+        add(yearField);
+        
+        times = new TimeBlock();
+        add(new JLabel("Time:"));
+        startHourField = new JTextField(2);
+        startHourField.addActionListener(this);
+        add(startHourField);
+        add(new JLabel(":"));
+        startMinField = new JTextField(2);
+        startMinField.addActionListener(this);
+        add(startMinField);
+        startAMPMDropDown = new JComboBox(new String[] {"AM", "PM"} );
+        startAMPMDropDown.addActionListener(this);
+        add(startAMPMDropDown);
+        add(new JLabel("-"));
+        endHourField = new JTextField(2);
+        endHourField.addActionListener(this);
+        add(endHourField);
+        add(new JLabel(":"));
+        endMinField = new JTextField(2);
+        endMinField.addActionListener(this);
+        add(endMinField);
+        endAMPMDropDown = new JComboBox(new String[] {"AM", "PM"} );
+        endAMPMDropDown.addActionListener(this);
+        add(endAMPMDropDown);
+        
+        isRecurring = false;
+        isRecurringBox = new JCheckBox("Recurring Event:");
+        isRecurringBox.addItemListener(this);
+        add(isRecurringBox);
+        recurType = RecurType.DAILY;
+        recurDropDown = new JComboBox(RECUR_TYPES);
+        recurDropDown.addActionListener(this);
+        recurDropDown.setEditable(false);
+        add(recurDropDown);
+        stopDate = new GregorianCalendar();
+        add(new JLabel("Stop Date:"));
+        stopMonthDropDown = new JComboBox(MONTHS);
+        stopMonthDropDown.addActionListener(this);
+        stopMonthDropDown.setEditable(false);
+        add(stopMonthDropDown);
+        stopDayField = new JTextField(2);
+        stopDayField.setEditable(false);
+        stopDayField.addActionListener(this);
+        add(stopDayField);
+        add(new JLabel(","));
+        stopYearField = new JTextField(4);
+        stopYearField.setEditable(false);
+        stopYearField.addActionListener(this);
+        add(stopYearField);
+        
+        ok = new JButton();
+        ok.addActionListener(this);
+        add(ok);
+        cancel = new JButton();
+        cancel.addActionListener(this);
+        add(cancel);
+        
+        this.setEnabled(false);
+    }
+    
+    /**
+     * Activates panel
+     * @throws Exception  invalid TimeBlock, though for this method, it will not be thrown
+     */
+    @Override
+    public void activate() {
+        Calendar today = Calendar.getInstance();
+        
+        title = "";
+        titleField.setText("");
+        location = "";
+        locationField.setText("");
+        
+        date = today;
+        monthDropDown.setSelectedIndex(today.get(Calendar.MONTH));
+        dayField.setText(Integer.toString(today.get(Calendar.DATE)));
+        yearField.setText(Integer.toString(today.get(Calendar.YEAR)));
+        
+        times = new TimeBlock();
+        startHourField.setText(Integer.toString(times.getStartHourAP()));
+        startMinField.setText(Integer.toString(times.getStartMinute()));
+        startAMPMDropDown.setSelectedIndex(times.isStartPM());
+        endHourField.setText(Integer.toString(times.getEndHourAP()));
+        endMinField.setText(Integer.toString(times.getEndMinute()));
+        endAMPMDropDown.setSelectedIndex(times.isEndPM());
+        
+        isRecurring = false;
+        recurType = RecurType.DAILY;
+        recurDropDown.setSelectedIndex(0);
+        recurDropDown.setEditable(false);
+        stopDate = today;
+        stopDate.add(Calendar.MONTH, 1);
+        stopMonthDropDown.setSelectedIndex(stopDate.get(Calendar.MONTH));
+        stopMonthDropDown.setEditable(false);
+        stopDayField.setText(Integer.toString(stopDate.get(Calendar.DATE)));
+        stopDayField.setEditable(false);
+        stopYearField.setText(Integer.toString(stopDate.get(Calendar.YEAR)));
+        stopYearField.setEditable(false);
+        
+        this.setEnabled(true);
+    }
+    
+    /**
+     * Sets fields in edit menu to certain event
+     * @throws Exception  invalid TimeBlock
+     */
+    public void setFields(Event eventToEdit) throws Exception {
+        Calendar tempEnd = new GregorianCalendar();
+        
         title = eventToEdit.getName();
+        titleField.setText(title);
+        
         location = eventToEdit.getLocation();
-            
+        locationField.setText(location);
+        
         if (eventToEdit instanceof OneTimeEvent) {
             (date = new GregorianCalendar()).setTime(((OneTimeEvent) eventToEdit).getStartDate());
             (tempEnd = new GregorianCalendar()).setTime(((OneTimeEvent) eventToEdit).getEndDate());
@@ -104,78 +231,7 @@ public class EditEventPage extends JPanel implements ActionListener, ItemListene
             }
         }
         
-        add(new JLabel("Name:"));
-        titleField = new JTextField(title);
-        titleField.addActionListener(this); 
-        add(titleField);
-        
-        add(new JLabel("Location:"));
-        locationField = new JTextField(location);
-        locationField.addActionListener(this);
-        add(locationField);
-        
-        add(new JLabel("Date:"));
-        monthDropDown = new JComboBox(MONTHS);
         monthDropDown.setSelectedIndex(date.get(Calendar.MONTH));
-        monthDropDown.addActionListener(this);
-        add(monthDropDown);
-        dayField = new JTextField(Integer.toString(date.get(Calendar.DATE)));
-        dayField.addActionListener(this);
-        add(dayField);
-        add(new JLabel(","));
-        yearField = new JTextField(Integer.toString(date.get(Calendar.YEAR)));
-        yearField.addActionListener(this);
-        add(yearField);
-        
-        add(new JLabel("Time:"));
-        startHourField = new JTextField(Integer.toString(times.getStartHourAP()));
-        startHourField.addActionListener(this);
-        add(startHourField);
-        add(new JLabel(":"));
-        startMinField = new JTextField(Integer.toString(times.getStartMinute()));
-        startMinField.addActionListener(this);
-        add(startMinField);
-        startAMPMDropDown = new JComboBox(new String[] {"AM", "PM"} );
-        startAMPMDropDown.setSelectedIndex(times.isStartPM());
-        startAMPMDropDown.addActionListener(this);
-        add(startAMPMDropDown);
-        add(new JLabel("-"));
-        endHourField = new JTextField(Integer.toString(times.getEndHourAP()));
-        endHourField.addActionListener(this);
-        add(endHourField);
-        add(new JLabel(":"));
-        endMinField = new JTextField(Integer.toString(times.getEndMinute()));
-        endMinField.addActionListener(this);
-        add(endMinField);
-        endAMPMDropDown = new JComboBox(new String[] {"AM", "PM"} );
-        endAMPMDropDown.setSelectedIndex(times.isEndPM());
-        endAMPMDropDown.addActionListener(this);
-        add(endAMPMDropDown);
-        
-        isRecurringBox = new JCheckBox("Recurring Event:");
-        isRecurringBox.setSelected(isRecurring);
-        isRecurringBox.addItemListener(this);
-        add(isRecurringBox);
-        recurDropDown = new JComboBox(RECUR_TYPES);
-        recurDropDown.setSelectedIndex(recurType.ordinal());
-        recurDropDown.addActionListener(this);
-        recurDropDown.setEditable(isRecurring);
-        add(recurDropDown);
-        add(new JLabel("Stop Date:"));
-        stopMonthDropDown = new JComboBox(MONTHS);
-        stopMonthDropDown.setSelectedIndex(stopDate.get(Calendar.MONTH));
-        stopMonthDropDown.addActionListener(this);
-        stopMonthDropDown.setEditable(isRecurring);
-        add(stopMonthDropDown);
-        stopDayField = new JTextField(stopDate.get(Calendar.DATE));
-        stopDayField.setEditable(isRecurring);
-        stopDayField.addActionListener(this);
-        add(stopDayField);
-        add(new JLabel(","));
-        stopYearField = new JTextField(stopDate.get(Calendar.YEAR));
-        stopYearField.setEditable(isRecurring);
-        stopYearField.addActionListener(this);
-        add(stopYearField);
     }
     
     /**
@@ -193,7 +249,9 @@ public class EditEventPage extends JPanel implements ActionListener, ItemListene
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        int hour;
+        int day;
+        Event newEvent;
+        Calendar endDate;
         
         if (e.getSource() == titleField) {
             title = titleField.getText();
@@ -203,7 +261,12 @@ public class EditEventPage extends JPanel implements ActionListener, ItemListene
             date.set(Calendar.MONTH, monthDropDown.getSelectedIndex());
         } else if (e.getSource() == dayField) {
             try {
-                date.set(Calendar.DATE, Integer.parseInt(dayField.getText()));
+                day = Integer.parseInt(dayField.getText());
+                if (day > 0 && day <= 28) {
+                    date.set(Calendar.DATE, day);
+                } else {
+                    dayField.setText(Integer.toString(date.get(Calendar.DATE)));
+                }
             }
             catch (NumberFormatException nfe) {
                 dayField.setText(Integer.toString(date.get(Calendar.DATE)));
@@ -297,6 +360,71 @@ public class EditEventPage extends JPanel implements ActionListener, ItemListene
             catch (NumberFormatException nfe) {
                 stopYearField.setText(Integer.toString(stopDate.get(Calendar.YEAR)));
             }
+        } else if (e.getSource() == ok) {
+            try {
+                if (isRecurring) {
+                    switch (recurType) {
+                    case DAILY:
+                        newEvent = new DailyRecurringEvent(title, location, null, null,
+                                                           times.getStartHour(),
+                                                           times.getStartMinute(),
+                                                           times.getEndHour(), times.getEndMinute(),
+                                                           date, stopDate);
+                        break;
+                    case WEEKLY:
+                        newEvent = new WeeklyRecurringEvent(title, location, null, null,
+                                                            times.getStartHour(),
+                                                            times.getStartMinute(),
+                                                            times.getEndHour(), times.getEndMinute(),
+                                                            date.get(Calendar.DAY_OF_WEEK), date,
+                                                            stopDate);
+                        break;
+                    case MONTHLY_BY_DATE:
+                        newEvent = new MonthlyDateRecurringEvent(title, location, null, null,
+                                                                 times.getStartHour(),
+                                                                 times.getStartMinute(),
+                                                                 times.getEndHour(),
+                                                                 times.getEndMinute(),
+                                                                 date.get(Calendar.DATE),
+                                                                 date, stopDate);
+                        break;
+                    case MONTHLY_BY_DAY:
+                        newEvent = new MonthlyDayRecurringEvent(title, location, null, null,
+                                                                times.getStartHour(),
+                                                                times.getStartMinute(),
+                                                                times.getEndHour(),
+                                                                times.getEndMinute(),
+                                                                date.get(Calendar.DAY_OF_WEEK),
+                                                                date.get(
+                                                                        Calendar.DAY_OF_WEEK_IN_MONTH),
+                                                                date, stopDate);
+                        break;
+                    case YEARLY:
+                        newEvent = new YearlyRecurringEvent(title, location, null, null,
+                                                            times.getStartHour(),
+                                                            times.getStartMinute(),
+                                                            times.getEndHour(), times.getEndMinute(),
+                                                            date.get(Calendar.MONTH),
+                                                            date.get(Calendar.DATE), date, stopDate);
+                        break;
+                    }
+                } else {
+                    date.set(Calendar.HOUR, times.getStartHour());
+                    date.set(Calendar.MINUTE, times.getStartMinute());
+                    endDate = date;
+                    endDate.set(Calendar.HOUR, times.getEndHour());
+                    endDate.set(Calendar.MINUTE, times.getEndMinute());
+                    // TODO: cast Calendar to Date
+                    //event = new OneTimeEvent(title, location, null, null, date, endDate);
+                }
+                
+                // TODO: do something with event!
+                
+                this.setEnabled(false);
+            }
+            catch (Exception ex) {}
+        } else if (e.getSource() == cancel) {
+            this.setEnabled(false);
         }
     }
 
