@@ -371,6 +371,10 @@ public class TimeBlock {
     public String toString(){
         String startMin = ((startMinute < 10) ? "0" : "") + startMinute;
         String endMin = ((endMinute < 10) ? "0" : "") + endMinute;
-        return startHour + ":" + startMin + "-" + endHour + ":" + endMin;
+        String startAMPM = (isStartPM() == 1) ? "PM" : "AM";
+        String endAMPM = (isEndPM() == 1) ? "PM" : "AM";
+        
+        return getStartHourAP() + ":" + startMin + " " + startAMPM + " - " + getEndHourAP() + ":" +
+               endMin + " " + endAMPM;
     }
 }

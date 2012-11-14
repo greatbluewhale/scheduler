@@ -49,14 +49,14 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
     private JTextField stopYearField;
     private JButton    ok;
     private JButton    cancel;
-    
-    // enumeration of different recurring event types
-    private static enum RecurType { DAILY, WEEKLY, MONTHLY_BY_DATE, MONTHLY_BY_DAY, YEARLY };
-    
+
     private static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
                                             "Sep", "Oct", "Nov", "Dec"};
     private static final String[] RECUR_TYPES = {"Daily", "Weekly", "Monthly (by Date)",
                                                  "Monthly (by Day)", "Yearly"};
+    
+    // enumeration of different recurring event types
+    private static enum RecurType { DAILY, WEEKLY, MONTHLY_BY_DATE, MONTHLY_BY_DAY, YEARLY };
     
     /**
      * Init constructor
@@ -140,10 +140,10 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         stopYearField.addActionListener(this);
         add(stopYearField);
         
-        ok = new JButton();
+        ok = new JButton("OK");
         ok.addActionListener(this);
         add(ok);
-        cancel = new JButton();
+        cancel = new JButton("Cancel");
         cancel.addActionListener(this);
         add(cancel);
         
