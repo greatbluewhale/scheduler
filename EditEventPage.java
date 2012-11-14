@@ -181,7 +181,7 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         recurDropDown.setSelectedIndex(0);
         recurDropDown.setEditable(false);
         stopDate = today;
-        stopDate.add(Calendar.MONTH, 1);
+        stopDate.add(Calendar.YEAR, 1);
         stopMonthDropDown.setSelectedIndex(stopDate.get(Calendar.MONTH));
         stopMonthDropDown.setEditable(false);
         stopDayField.setText(Integer.toString(stopDate.get(Calendar.DATE)));
