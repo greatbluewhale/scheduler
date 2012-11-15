@@ -386,13 +386,13 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         // if (e.getSource() == isRecurringBox)
         if (e.getStateChange() == ItemEvent.SELECTED) {
             recurDropDown.setEditable(true);
-            stopDatePanel.setVisible(false);
+            stopDatePanel.setVisible(true);
             stopMonthDropDown.setEditable(true);
             stopDayField.setEditable(true);
             stopYearField.setEditable(true);
         } else {
             recurDropDown.setEditable(false);
-            stopDatePanel.setVisible(true);
+            stopDatePanel.setVisible(false);
             stopMonthDropDown.setEditable(false);
             stopDayField.setEditable(false);
             stopYearField.setEditable(false);
