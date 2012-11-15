@@ -234,12 +234,8 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
             times = ((RecurringEvent) eventToEdit).getTimes();
             
             isRecurring = true;
+            isRecurringBox.setSelected(true);
             recurDropDown.setEditable(true);
-            stopDatePanel.setVisible(true);
-            stopMonthDropDown.setEditable(true);
-            stopDayField.setEditable(true);
-            stopYearField.setEditable(true);
-            
             if (eventToEdit instanceof DailyRecurringEvent) {
                 recurType = RecurType.DAILY;
             } else if (eventToEdit instanceof WeeklyRecurringEvent) {
@@ -253,8 +249,25 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
             }
             recurDropDown.setSelectedIndex(recurType.ordinal());
             
-     
+            stopDatePanel.setVisible(true);
+            stopMonthDropDown.setEditable(true);
+            stopMonthDropDown.setSelectedIndex(endDate.get(Calendar.MONTH));
+            stopDayField.setEditable(true);
+            stopDayField.setText(Integer.toString(endDate.get(Calendar.DATE)));
+            stopYearField.setEditable(true);
+            stopYearField.setText(Integer.toString(endDate.get(Calendar.YEAR)));
         }
+        
+        monthDropDown.setSelectedIndex(date.get(Calendar.MONTH));
+        dayField.setText(Integer.toString(date.get(Calendar.DATE)));
+        yearField.setText(Integer.toString(date.get(Calendar.YEAR)));
+        
+        startHourField.setText(Integer.toString(times.getStartHourAP()));
+        startMinField.setText(Integer.toString(times.getStartMinute()));
+        startAMPMDropDown.setSelectedIndex(times.isStartPM());
+        endHourField.setText(Integer.toString(times.getEndHourAP()));
+        endMinField.setText(Integer.toString(times.getEndMinute()));
+        endAMPMDropDown.setSelectedIndex(times.isEndPM());
     }
     
     /**
