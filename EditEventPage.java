@@ -5,6 +5,7 @@
  * Date:    11/1/2012
  */
 
+import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.event.*;
 import java.util.Calendar;
@@ -78,6 +79,8 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         JPanel timesPanel;
         JPanel recurPanel;
         JPanel buttonPanel;
+        
+        setLayout(new BoxLayout((Container) this, BoxLayout.Y_AXIS));
         
         titlePanel = new JPanel();
         titlePanel.add(new JLabel("Name:"));
@@ -223,6 +226,7 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
                                   endDate.get(Calendar.MINUTE));
             
             isRecurring = false;
+            isRecurringBox.setSelected(false);
             recurDropDown.setEditable(false);
             stopDatePanel.setVisible(false);
             stopMonthDropDown.setEditable(false);
