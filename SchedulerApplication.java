@@ -14,13 +14,11 @@ public class SchedulerApplication extends JFrame {
     private final int MINIMUM_WIDTH = 800;
     private final int MINIMUM_HEIGHT = 600;
     
-    private final String TITLE = "Scheduler Manager";
-    
     private JPanel mainPanel = new JPanel();
     private CardLayout cardLayout = new CardLayout();
     
     private enum Page {
-        LOGIN_PAGE(0), MONTHLY_VIEW_PAGE(1);
+        LOGIN_PAGE(0), MONTHLY_VIEW_PAGE(1), EDIT_EVENT_PAGE(2);
         private int index;
         private Page(int index){
             this.index = index;
@@ -30,13 +28,13 @@ public class SchedulerApplication extends JFrame {
         }
     }
     
-    private PagePanel[] pages = {new LoginPage(), new MonthlyViewPage()};
+    private PagePanel[] pages = {new LoginPage(), new MonthlyViewPage(), new EditEventPage()};
     
     public User currentUser;
     
     public void startup(){
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle(TITLE);
+        setTitle(SchedulerMain.TITLE);
         this.setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
         mainPanel.setLayout(cardLayout);
@@ -70,6 +68,29 @@ public class SchedulerApplication extends JFrame {
             e.printStackTrace();
         }
         
+        showMonthlyView();
+    }
+    
+    public void editEvent(Event event){
+        setCurrentPage(Page.EDIT_EVENT_PAGE);
+        try {
+            pages[Page.EDIT_EVENT_PAGE.getIndex()].setFields(event);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    public void showMonthlyView(){
         setCurrentPage(Page.MONTHLY_VIEW_PAGE);
+    }
+    
+    public void addEvent(Event ev){
+        ev.creator.addEvent(ev);
+        if (ev.attendees != null){
+            for (User person : ev.attendees){
+                person.addEvent(ev);
+            }
+        }
     }
 }

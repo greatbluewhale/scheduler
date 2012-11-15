@@ -37,7 +37,7 @@ public class CalendarCell extends JPanel implements MouseListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO: Open the edit event page
-                System.out.println(selectedEventLabel.event.name);
+                SchedulerMain.application.editEvent(selectedEventLabel.event);
             }
         });
     }
