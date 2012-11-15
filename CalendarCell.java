@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,15 +32,24 @@ public class CalendarCell extends JPanel implements MouseListener {
     // This static initialization block is executed exactly once (at the start of the program)
     static {
         popup = new JPopupMenu();
-        JMenuItem editEvent = new JMenuItem("Edit Event");
+        final JMenuItem editEvent = new JMenuItem("Edit Event");
         popup.add(editEvent);
-        editEvent.addActionListener(new ActionListener(){
+        final JMenuItem deleteEvent = new JMenuItem("Delete Event");
+        popup.add(deleteEvent);
+        ActionListener listener = new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: Open the edit event page
-                SchedulerMain.application.editEvent(selectedEventLabel.event);
+                RecurringEvent parent = selectedEventLabel.event.getParent();
+                Event event = (parent != null) ? parent : selectedEventLabel.event;
+                if (e.getSource() == editEvent){
+                    SchedulerMain.application.showEditEventPage(event);
+                } else if (e.getSource() == deleteEvent){
+                    SchedulerMain.application.showDeletePopup(event);
+                }
             }
-        });
+        };
+        editEvent.addActionListener(listener);
+        deleteEvent.addActionListener(listener);
     }
     
     private ArrayList<EventLabel> list = new ArrayList<EventLabel>(0);
@@ -69,8 +79,12 @@ public class CalendarCell extends JPanel implements MouseListener {
             while (it.hasNext()){
                 EventLabel el = it.next();
                 if (e.getSource() == el.label){
-                    // TODO: open event
-                    System.out.println(el.event.name);
+                    RecurringEvent parent = el.event.getParent();
+                    if (parent == null){
+                        SchedulerMain.application.showViewEventPage(el.event, null);
+                    } else {
+                        SchedulerMain.application.showViewEventPage(parent, el.event);
+                    }
                     break;
                 }
             }
@@ -102,7 +116,11 @@ public class CalendarCell extends JPanel implements MouseListener {
     }
     
     @Override
-    public void mouseEntered(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
     @Override
-    public void mouseExited(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
 }

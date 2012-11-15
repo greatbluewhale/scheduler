@@ -5,7 +5,6 @@
  * Date:    11/14/2012
  */
 
-import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +17,7 @@ import javax.swing.*;
  * @author Nicholas Dyszel
  * @version 1.0  14 Nov 2012
  */
+@SuppressWarnings("serial")
 public class ViewEventPage extends PagePanel implements ActionListener {
     private JPanel  titlePanel;
     private JLabel  title;
@@ -33,48 +33,54 @@ public class ViewEventPage extends PagePanel implements ActionListener {
     private JButton ok;
     private JButton edit;
     
+    private Event   currentEvent;
+    
     public ViewEventPage() {
         super();
         
-        setLayout(new BoxLayout((Container) this, BoxLayout.Y_AXIS));
+        setLayout(new FlowLayout(FlowLayout.CENTER));
         
         titlePanel = new JPanel();
         titlePanel.add(new JLabel("Name:"));
         title = new JLabel(" ");
         titlePanel.add(title);
-        add(titlePanel);
+        //add(titlePanel);
         
         locationPanel = new JPanel();
         locationPanel.add(new JLabel("Location:"));
         location = new JLabel(" ");
         locationPanel.add(location);
-        add(locationPanel);
+        //add(locationPanel);
         
         datePanel = new JPanel();
         datePanel.add(new JLabel("Date:"));
         date = new JLabel(" ");
         datePanel.add(date);
-        add(datePanel);
+        //add(datePanel);
         
         timesPanel = new JPanel();
         timesPanel.add(new JLabel("Time:"));
         times = new JLabel(" ");
         timesPanel.add(times);
-        add(timesPanel);
+        //add(timesPanel);
         
         recurPanel = new JPanel();
         recur = new JLabel("This event does not repeat.");
         recurPanel.add(recur);
-        add(recurPanel);
+        //add(recurPanel);
         
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
         ok = new JButton("OK");
         ok.addActionListener(this);
-        add(ok);
+        buttonPanel.add(ok);
         edit = new JButton("Edit");
         edit.addActionListener(this);
-        add(edit);
+        buttonPanel.add(edit);
+        //add(buttonPanel);
+        
+        JPanel[] mainPanels = {titlePanel, locationPanel, datePanel, timesPanel, recurPanel, buttonPanel};
+        add(Utils.stackPanels(mainPanels));
         
         this.setEnabled(false);
     }
@@ -90,7 +96,8 @@ public class ViewEventPage extends PagePanel implements ActionListener {
         this.setEnabled(true);
     }
     
-    public void set(Event eventToView) throws Exception {
+    @Override
+    public void setFields(Event eventToView, OneTimeEvent childEvent) throws Exception {
         Calendar startDate = new GregorianCalendar();
         Calendar endDate = new GregorianCalendar();
         TimeBlock timeBlock;
@@ -98,18 +105,25 @@ public class ViewEventPage extends PagePanel implements ActionListener {
         String dayOfWeek;
         String weekOfMonth;
         
+        currentEvent = eventToView;
+        
         title.setText(eventToView.getName());
         location.setText(eventToView.getLocation());
         
         if (eventToView instanceof OneTimeEvent) {
             startDate.setTime(((OneTimeEvent) eventToView).getStartDate());
             endDate.setTime(((OneTimeEvent) eventToView).getEndDate());
-            timeBlock = new TimeBlock(startDate.get(Calendar.HOUR), startDate.get(Calendar.MINUTE),
-                                      endDate.get(Calendar.HOUR), endDate.get(Calendar.MINUTE));
+            timeBlock = new TimeBlock(startDate.get(Calendar.HOUR_OF_DAY), startDate.get(Calendar.MINUTE),
+                                      endDate.get(Calendar.HOUR_OF_DAY), endDate.get(Calendar.MINUTE));
             
             recur.setText("This event does not repeat.");
         } else {
-            startDate = ((RecurringEvent) eventToView).getIntervalStart();
+            if (childEvent != null){
+                startDate.setTime(childEvent.getStartDate());
+            } else {
+                startDate = ((RecurringEvent) eventToView).getIntervalStart();
+            }
+            
             endDate = ((RecurringEvent) eventToView).getIntervalEnd();
             timeBlock = ((RecurringEvent) eventToView).getTimes();
             
@@ -148,11 +162,11 @@ public class ViewEventPage extends PagePanel implements ActionListener {
             }
             
             recur.setText("This event repeats every " + recurType + " and stops on: " +
-                          endDate.get(Calendar.MONTH) + "/" + endDate.get(Calendar.DATE) + "/" +
+                          (endDate.get(Calendar.MONTH)+1) + "/" + endDate.get(Calendar.DATE) + "/" +
                           endDate.get(Calendar.YEAR));
         }
         
-        date.setText(startDate.get(Calendar.MONTH) + "/" + startDate.get(Calendar.DATE) + "/" +
+        date.setText((startDate.get(Calendar.MONTH)+1) + "/" + startDate.get(Calendar.DATE) + "/" +
                      startDate.get(Calendar.YEAR));
         times.setText(timeBlock.toString());
     }
@@ -161,8 +175,9 @@ public class ViewEventPage extends PagePanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == ok) {
             this.setEnabled(false);
+            SchedulerMain.application.showMonthlyView();
         } else if (e.getSource() == edit) {
-            // TODO: switch windows
+            SchedulerMain.application.showEditEventPage(currentEvent);
         }
     }
     

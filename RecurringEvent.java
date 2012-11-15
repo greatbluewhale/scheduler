@@ -103,8 +103,13 @@ public abstract class RecurringEvent extends Event {
     @Override
     public ArrayList<OneTimeEvent> getEvents(Date start, Date end){
         ArrayList<OneTimeEvent> list = new ArrayList<OneTimeEvent>();    // list of one-time events
-        Calendar startOfEvent = getStartOfFirstEvent(start);             // the start of each one-time event
-        Calendar endOfEvent = new GregorianCalendar();                   // the end of each one-time event
+        
+        Calendar startCal = new GregorianCalendar();
+        startCal.setTime(start);
+        Date actualStartOfInterval = (startInterval.after(startCal) ? startInterval : startCal).getTime();
+        
+        Calendar startOfEvent = getStartOfFirstEvent(actualStartOfInterval);    // the start of each one-time event
+        Calendar endOfEvent = new GregorianCalendar();                          // the end of each one-time event
         
         // Find the end of the first event
         endOfEvent.setTime(startOfEvent.getTime());
@@ -112,11 +117,12 @@ public abstract class RecurringEvent extends Event {
         endOfEvent.set(Calendar.MINUTE, time.getEndMinute());
         
         // For each event time in the interval, add a one-time event
-        while (end.after(startOfEvent.getTime())){
-            list.add(new OneTimeEvent(name, location, attendees, creator, startOfEvent.getTime(), endOfEvent.getTime()));
+        while (endInterval.after(startOfEvent) && end.after(startOfEvent.getTime())){
+            list.add(new OneTimeEvent(name, location, attendees, creator, startOfEvent.getTime(), endOfEvent.getTime(), this));
             nextEvent(startOfEvent);
             nextEvent(endOfEvent);
         }
+        
         return list;
     }
 }

@@ -16,6 +16,8 @@ import java.util.ArrayList;
 public class OneTimeEvent extends Event implements Comparable<OneTimeEvent> {
     private Date start; // the start time of the event
     private Date end;   // the end time of the event
+    private RecurringEvent parent;  // if it exists, this is a pointer to 
+                                    // the RecurringEvent that generates this OneTimeEvent
     
     /**
      * Init constructor.
@@ -31,6 +33,12 @@ public class OneTimeEvent extends Event implements Comparable<OneTimeEvent> {
         super(name, location, attendees, creator);
         this.start = start;
         this.end = end;
+        this.parent = null;
+    }
+    
+    public OneTimeEvent(String name, String location, User[] attendees, User creator, Date start, Date end, RecurringEvent parent) {
+        this(name, location, attendees, creator, start, end);
+        this.parent = parent;
     }
     
     /**
@@ -47,6 +55,10 @@ public class OneTimeEvent extends Event implements Comparable<OneTimeEvent> {
      */
     public Date getEndDate(){
         return end;
+    }
+    
+    public RecurringEvent getParent(){
+        return parent;
     }
     
     /**

@@ -238,6 +238,14 @@ public class TimeBlock {
     }
     
     /**
+     * Determines whether the given interval is valid (in 24-hour time)
+     */
+    public static boolean isValid(int startHour, int startMinute, int endHour, int endMinute){
+        return (startHour >= 0 && startHour <= endHour && endHour <= MAX_HOUR && 
+                startMinute >= 0 && startMinute <= endMinute && endMinute <= MAX_MINUTE);
+    }
+    
+    /**
      * Returns true if hour1:min1 is at or before hour2:min2
      * 
      * @param hour1, hour of first time

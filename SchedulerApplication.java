@@ -1,13 +1,12 @@
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 
 @SuppressWarnings("serial")
-public class SchedulerApplication extends JFrame {
+public class SchedulerApplication extends JFrame implements ActionListener {
     
     private final int STARTING_WIDTH = 1000;
     private final int STARTING_HEIGHT = 700;
@@ -17,8 +16,12 @@ public class SchedulerApplication extends JFrame {
     private JPanel mainPanel = new JPanel();
     private CardLayout cardLayout = new CardLayout();
     
+    private JMenuItem addEvent = new JMenuItem("Create Event");
+    private JMenuItem viewUser = new JMenuItem("View User Info");
+    private JMenuItem viewCalendar = new JMenuItem("View Calendar");
+    
     private enum Page {
-        LOGIN_PAGE(0), MONTHLY_VIEW_PAGE(1), EDIT_EVENT_PAGE(2);
+        LOGIN_PAGE(0), MONTHLY_VIEW_PAGE(1), EDIT_EVENT_PAGE(2), VIEW_EVENT_PAGE(3), VIEW_USER_PAGE(4);
         private int index;
         private Page(int index){
             this.index = index;
@@ -28,13 +31,31 @@ public class SchedulerApplication extends JFrame {
         }
     }
     
-    private PagePanel[] pages = {new LoginPage(), new MonthlyViewPage(), new EditEventPage()};
+    private PagePanel[] pages = {new LoginPage(), new MonthlyViewPage(), new EditEventPage(), new ViewEventPage(), new ViewUserPage()};
     
     public User currentUser;
     
     public void startup(){
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle(SchedulerMain.TITLE);
+        
+        JMenuBar menuBar = new JMenuBar();
+        JMenu options = new JMenu("Options");
+        
+        addEvent.setEnabled(false);
+        viewUser.setEnabled(false);
+        viewCalendar.setEnabled(false);
+        options.add(addEvent);
+        //TODO: implement View User Page
+        //options.add(viewUser);
+        options.add(viewCalendar);
+        menuBar.add(options);
+        setJMenuBar(menuBar);
+        
+        addEvent.addActionListener(this);
+        viewUser.addActionListener(this);
+        viewCalendar.addActionListener(this);
+        
         this.setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
         mainPanel.setLayout(cardLayout);
@@ -47,6 +68,17 @@ public class SchedulerApplication extends JFrame {
         setMinimumSize(new Dimension(MINIMUM_WIDTH, MINIMUM_HEIGHT));
     }
     
+    @Override
+    public void actionPerformed(ActionEvent e){
+        if (e.getSource() == addEvent){
+            showCreateEventPage();
+        } else if (e.getSource() == viewUser){
+            showUserView();
+        } else if (e.getSource() == viewCalendar){
+            showMonthlyView();
+        }
+    }
+    
     public void setCurrentPage(Page pageName){
         cardLayout.show(mainPanel, ""+pageName.getIndex());
         pages[pageName.getIndex()].activate();
@@ -54,27 +86,48 @@ public class SchedulerApplication extends JFrame {
     
     public void logIn(User user){
         currentUser = user;
+        /*
         // TODO: remove this try-catch block later, used only for testing purposes
         try {
             Calendar cal = new GregorianCalendar();
             cal.set(2012, Calendar.NOVEMBER, 15);
             currentUser.addEvent(new OneTimeEvent("Project Due Date", null, null, currentUser, cal.getTime(), cal.getTime()));
-            currentUser.addEvent(new YearlyRecurringEvent("Birthday", null, null, currentUser, 0, 0, 23, 59, Calendar.AUGUST, 9, null, null));
-            currentUser.addEvent(new MonthlyDayRecurringEvent("1st Monday", null, null, currentUser, 12, 0, 12, 30, Calendar.MONDAY, 1, null, null));
-            currentUser.addEvent(new MonthlyDateRecurringEvent("28th of the month", null, null, currentUser, 18, 0, 18, 45, 28, null, null));
-            currentUser.addEvent(new WeeklyRecurringEvent("CMPSC 221", "IST 220", null, currentUser, 9, 5, 9, 55, Calendar.MONDAY, null, null));
+            
+            currentUser.addEvent(new YearlyRecurringEvent("Birthday", null, null, currentUser, 0, 0, 23, 59, Calendar.AUGUST, 9, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2013, Calendar.NOVEMBER, 5, false)));
+            currentUser.addEvent(new MonthlyDayRecurringEvent("1st Monday", null, null, currentUser, 12, 0, 12, 30, Calendar.MONDAY, 1, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2013, Calendar.NOVEMBER, 5, false)));
+            currentUser.addEvent(new MonthlyDateRecurringEvent("28th of the month", null, null, currentUser, 18, 0, 18, 45, 28, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2012, Calendar.MAY, 5, false)));
+            currentUser.addEvent(new WeeklyRecurringEvent("CMPSC 221", "IST 220", null, currentUser, 9, 5, 9, 55, Calendar.MONDAY, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2012, Calendar.DECEMBER, 24, false)));
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        */
+        addEvent.setEnabled(true);
+        viewUser.setEnabled(true);
+        viewCalendar.setEnabled(true);
         
         showMonthlyView();
     }
     
-    public void editEvent(Event event){
+    public void showCreateEventPage(){
+        setCurrentPage(Page.EDIT_EVENT_PAGE);
+    }
+    
+    public void showEditEventPage(Event event){
         setCurrentPage(Page.EDIT_EVENT_PAGE);
         try {
             pages[Page.EDIT_EVENT_PAGE.getIndex()].setFields(event);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    public void showViewEventPage(Event event, OneTimeEvent childEvent){
+        // childEvent can be null (if event is already a OneTimeEvent)
+        setCurrentPage(Page.VIEW_EVENT_PAGE);
+        try {
+            pages[Page.VIEW_EVENT_PAGE.getIndex()].setFields(event, childEvent);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -85,11 +138,37 @@ public class SchedulerApplication extends JFrame {
         setCurrentPage(Page.MONTHLY_VIEW_PAGE);
     }
     
+    public void showUserView(){
+        setCurrentPage(Page.VIEW_USER_PAGE);
+    }
+    
+    public void showDeletePopup(Event ev){
+        // TODO: make a confirmation popup
+        deleteEvent(ev);
+        showMonthlyView();
+    }
+    
     public void addEvent(Event ev){
         ev.creator.addEvent(ev);
         if (ev.attendees != null){
             for (User person : ev.attendees){
                 person.addEvent(ev);
+            }
+        }
+    }
+    
+    public void editEvent(Event oldEvent, Event newEvent){
+        // TODO: risky! we're changing the pointer instead of the object
+        User user = oldEvent.creator;
+        user.deleteEvent(oldEvent);
+        user.addEvent(newEvent);
+    }
+    
+    public void deleteEvent(Event ev){
+        ev.creator.deleteEvent(ev);
+        if (ev.attendees != null){
+            for (User person : ev.attendees){
+                person.deleteEvent(ev);
             }
         }
     }

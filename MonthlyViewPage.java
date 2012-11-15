@@ -20,12 +20,6 @@ public class MonthlyViewPage extends PagePanel implements ActionListener{
     
     private static final int MONTH_STRING_SIZE = 30;
     
-    private static JPanel createPanelWrapper(Component object){
-        JPanel panel = new JPanel();
-        panel.add(object);
-        return panel;
-    }
-    
     private JPanel topPanel = new JPanel();
     private JPanel mainPanel = new JPanel();
     private JPanel weekLabelPanel = new JPanel();
@@ -43,9 +37,9 @@ public class MonthlyViewPage extends PagePanel implements ActionListener{
         add(mainPanel, BorderLayout.CENTER);
         
         topPanel.setLayout(new BorderLayout());
-        topPanel.add(createPanelWrapper(previous), BorderLayout.WEST);
-        topPanel.add(createPanelWrapper(monthLabel), BorderLayout.CENTER);
-        topPanel.add(createPanelWrapper(next), BorderLayout.EAST);
+        topPanel.add(Utils.createPanelWrapper(previous), BorderLayout.WEST);
+        topPanel.add(Utils.createPanelWrapper(monthLabel), BorderLayout.CENTER);
+        topPanel.add(Utils.createPanelWrapper(next), BorderLayout.EAST);
         
         mainPanel.setLayout(new BorderLayout());
         mainPanel.add(weekLabelPanel, BorderLayout.NORTH);

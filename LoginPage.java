@@ -20,17 +20,12 @@ public class LoginPage extends PagePanel implements ActionListener {
     
     public LoginPage(){
         JPanel titlePanel = new JPanel();
-        JPanel contentPanel = new JPanel();
         JPanel buttonPanel = new JPanel();
         JPanel invalidLoginPanel = new JPanel();
+        JPanel[] panels = {titlePanel, buttonPanel, invalidLoginPanel};
         
         setLayout(new BorderLayout());
-        add(titlePanel, BorderLayout.NORTH);
-        add(contentPanel, BorderLayout.CENTER);
-        contentPanel.setLayout(new BorderLayout());
-        contentPanel.add(buttonPanel, BorderLayout.NORTH);
-        contentPanel.add(invalidLoginPanel, BorderLayout.CENTER);
-        
+        add(Utils.stackPanels(panels), BorderLayout.CENTER);
         JLabel title = new JLabel(SchedulerMain.TITLE);
         title.setFont(new Font(title.getFont().getFontName(), Font.BOLD, TITLE_SIZE));
         
