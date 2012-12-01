@@ -241,8 +241,11 @@ public class TimeBlock {
      * Determines whether the given interval is valid (in 24-hour time)
      */
     public static boolean isValid(int startHour, int startMinute, int endHour, int endMinute){
-        return (startHour >= 0 && startHour <= endHour && endHour <= MAX_HOUR && 
-                startMinute >= 0 && startMinute <= endMinute && endMinute <= MAX_MINUTE);
+        if (startHour >= 0 && startHour <= MAX_HOUR && endHour >= 0 && endHour <= MAX_HOUR && 
+                startMinute >= 0 && startMinute <= MAX_MINUTE && endMinute >= 0 && endMinute <= MAX_MINUTE){
+            return (startHour < endHour || (startHour == endHour && startMinute <= endMinute));
+        }
+        return false;
     }
     
     /**

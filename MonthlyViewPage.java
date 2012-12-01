@@ -14,11 +14,24 @@ import java.util.Iterator;
 public class MonthlyViewPage extends PagePanel implements ActionListener{
     
     private static final SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("MMMM yyyy");
-    private static final int DAYS_IN_WEEK = 7;
+    public static final int DAYS_IN_WEEK = 7;
     private static final String[] NAMES_OF_DAYS = {"Sunday", "Monday", "Tuesday", 
                                                    "Wednesday", "Thursday", "Friday", "Saturday"};
     
     private static final int MONTH_STRING_SIZE = 30;
+    
+    private static final Calendar START_OF_TODAY;
+    private static final Calendar END_OF_TODAY;
+    static {
+        START_OF_TODAY = new GregorianCalendar();
+        END_OF_TODAY = new GregorianCalendar();
+        START_OF_TODAY.set(Calendar.HOUR_OF_DAY, 0);
+        START_OF_TODAY.set(Calendar.MINUTE, 0);
+        START_OF_TODAY.set(Calendar.SECOND, 0);
+        END_OF_TODAY.set(Calendar.HOUR_OF_DAY, 23);
+        END_OF_TODAY.set(Calendar.MINUTE, 59);
+        END_OF_TODAY.set(Calendar.SECOND, 59);
+    }
     
     private JPanel topPanel = new JPanel();
     private JPanel mainPanel = new JPanel();
@@ -76,6 +89,7 @@ public class MonthlyViewPage extends PagePanel implements ActionListener{
         int numWeeksInMonth = month.getActualMaximum(Calendar.WEEK_OF_MONTH);
         int calendarMonth = month.get(Calendar.MONTH);
         Calendar calendar = new GregorianCalendar();
+        int todayCell = -1;
         
         // Update month label and clear calendar
         monthLabel.setText(MONTH_FORMAT.format(month.getTime()));
@@ -112,8 +126,14 @@ public class MonthlyViewPage extends PagePanel implements ActionListener{
         Iterator<OneTimeEvent> eventsIt = events.iterator();
         OneTimeEvent currentEvent = eventsIt.hasNext() ? eventsIt.next() : null;
         for (int cellIndex=0; cellIndex<numWeeksInMonth*DAYS_IN_WEEK; cellIndex++){
+            boolean isToday = (START_OF_TODAY.before(calendar) && END_OF_TODAY.after(calendar));
+            // Check if it's today (TODO: inefficient)
+            if (isToday){
+                todayCell = cellIndex;
+            }
+            
             // Create a new CalendarCell object
-            cells[cellIndex] = new CalendarCell(calendar, (calendar.get(Calendar.MONTH) == calendarMonth));
+            cells[cellIndex] = new CalendarCell(calendar, (calendar.get(Calendar.MONTH) == calendarMonth), isToday);
             calendarPanel.add(cells[cellIndex]);
             
             // Add events to the cell if necessary
@@ -123,6 +143,22 @@ public class MonthlyViewPage extends PagePanel implements ActionListener{
                 currentEvent = eventsIt.hasNext() ? eventsIt.next() : null;
             }
         }
+        
+        // Add weather icons
+        if (SchedulerMain.application.checkIsWeatherEnabled() && todayCell != -1){
+            // TODO: don't hardcode zip code
+            ImageIcon[] icons = Weather.getWeather("16802");
+            if (icons != null){
+                for (ImageIcon icon : icons){
+                    cells[todayCell].addWeatherIcon(icon);
+                    todayCell++;
+                    if (todayCell >= cells.length){
+                        break;
+                    }
+                }
+            }
+        }
+        
         calendarPanel.setVisible(true);
     }
 }

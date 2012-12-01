@@ -13,12 +13,18 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     private final int MINIMUM_WIDTH = 800;
     private final int MINIMUM_HEIGHT = 600;
     
+    private final String ENABLE_WEATHER = "Enable Weather Feature";
+    private final String DISABLE_WEATHER = "Disable Weather Feature";
+    
+    private boolean isWeatherEnabled = true;
+    
     private JPanel mainPanel = new JPanel();
     private CardLayout cardLayout = new CardLayout();
     
     private JMenuItem addEvent = new JMenuItem("Create Event");
     private JMenuItem viewUser = new JMenuItem("View User Info");
     private JMenuItem viewCalendar = new JMenuItem("View Calendar");
+    private JMenuItem weatherItem = new JMenuItem(DISABLE_WEATHER);
     
     private enum Page {
         LOGIN_PAGE(0), MONTHLY_VIEW_PAGE(1), EDIT_EVENT_PAGE(2), VIEW_EVENT_PAGE(3), VIEW_USER_PAGE(4);
@@ -40,8 +46,8 @@ public class SchedulerApplication extends JFrame implements ActionListener {
         setTitle(SchedulerMain.TITLE);
         
         JMenuBar menuBar = new JMenuBar();
-        JMenu options = new JMenu("Options");
         
+        JMenu options = new JMenu("Options");
         addEvent.setEnabled(false);
         viewUser.setEnabled(false);
         viewCalendar.setEnabled(false);
@@ -50,11 +56,17 @@ public class SchedulerApplication extends JFrame implements ActionListener {
         //options.add(viewUser);
         options.add(viewCalendar);
         menuBar.add(options);
+        
+        JMenu features = new JMenu("Features");
+        features.add(weatherItem);
+        menuBar.add(features);
+        
         setJMenuBar(menuBar);
         
         addEvent.addActionListener(this);
         viewUser.addActionListener(this);
         viewCalendar.addActionListener(this);
+        weatherItem.addActionListener(this);
         
         this.setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
@@ -76,6 +88,8 @@ public class SchedulerApplication extends JFrame implements ActionListener {
             showUserView();
         } else if (e.getSource() == viewCalendar){
             showMonthlyView();
+        } else if (e.getSource() == weatherItem){
+            toggleWeatherFeature();
         }
     }
     
@@ -95,7 +109,7 @@ public class SchedulerApplication extends JFrame implements ActionListener {
             
             currentUser.addEvent(new YearlyRecurringEvent("Birthday", null, null, currentUser, 0, 0, 23, 59, Calendar.AUGUST, 9, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2013, Calendar.NOVEMBER, 5, false)));
             currentUser.addEvent(new MonthlyDayRecurringEvent("1st Monday", null, null, currentUser, 12, 0, 12, 30, Calendar.MONDAY, 1, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2013, Calendar.NOVEMBER, 5, false)));
-            currentUser.addEvent(new MonthlyDateRecurringEvent("28th of the month", null, null, currentUser, 18, 0, 18, 45, 28, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2012, Calendar.MAY, 5, false)));
+            currentUser.addEvent(new MonthlyDateRecurringEvent("28th of the month", null, null, currentUser, 18, 0, 18, 45, 28, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2013, Calendar.MAY, 5, false)));
             currentUser.addEvent(new WeeklyRecurringEvent("CMPSC 221", "IST 220", null, currentUser, 9, 5, 9, 55, Calendar.MONDAY, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2012, Calendar.DECEMBER, 24, false)));
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -140,6 +154,18 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     
     public void showUserView(){
         setCurrentPage(Page.VIEW_USER_PAGE);
+    }
+    
+    private void toggleWeatherFeature(){
+        isWeatherEnabled = !isWeatherEnabled;
+        weatherItem.setText(isWeatherEnabled ? DISABLE_WEATHER : ENABLE_WEATHER);
+        if (currentUser != null){
+            showMonthlyView();
+        }
+    }
+    
+    public boolean checkIsWeatherEnabled(){
+        return isWeatherEnabled;
     }
     
     public void showDeletePopup(Event ev){

@@ -15,6 +15,7 @@ import javax.swing.*;
 public class CalendarCell extends JPanel implements MouseListener {
     
     private static final Color NOT_IN_MONTH_COLOR = new Color(220, 220, 220);
+    private static final Color TODAY_COLOR = new Color(220, 240, 240);
     private static final int DATE_SIZE = 20;
     
     private static class EventLabel{
@@ -53,15 +54,21 @@ public class CalendarCell extends JPanel implements MouseListener {
     }
     
     private ArrayList<EventLabel> list = new ArrayList<EventLabel>(0);
+    private JLabel dayNumberLabel;
     
-    public CalendarCell(Calendar calendar, boolean isInMonth){
+    public CalendarCell(Calendar calendar, boolean isInMonth, boolean isToday){
         // Calendar calendar will be modified outside of this class, so do NOT 
         // store a reference to the object
-        setBackground(isInMonth ? Color.WHITE : NOT_IN_MONTH_COLOR);
+        if (isInMonth){
+            setBackground(isToday ? TODAY_COLOR : Color.WHITE);
+        } else {
+            setBackground(NOT_IN_MONTH_COLOR);
+        }
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        JLabel dayNumberLabel = new JLabel(""+calendar.get(Calendar.DATE));
+        dayNumberLabel = new JLabel(""+calendar.get(Calendar.DATE));
         dayNumberLabel.setFont(new Font(dayNumberLabel.getFont().getFontName(), Font.BOLD, DATE_SIZE));
+        dayNumberLabel.setHorizontalTextPosition(SwingConstants.LEFT);
         add(dayNumberLabel);
     }
     
@@ -70,6 +77,10 @@ public class CalendarCell extends JPanel implements MouseListener {
         add(label);
         list.add(new EventLabel(event, label));
         label.addMouseListener(this);
+    }
+    
+    public void addWeatherIcon(ImageIcon icon){
+        dayNumberLabel.setIcon(icon);
     }
     
     @Override

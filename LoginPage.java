@@ -38,14 +38,15 @@ public class LoginPage extends PagePanel implements ActionListener {
         invalidLoginPanel.add(invalidLogin);
         invalidLogin.setForeground(Color.RED);
         
+        usernameField.addActionListener(this);
         passwordField.addActionListener(this);
         submit.addActionListener(this);
     }
     
     @Override
     public void activate(){
-        usernameField.setText("");
-        passwordField.setText("");
+        usernameField.setText(SchedulerMain.testUsername);
+        passwordField.setText(SchedulerMain.testPassword);
     }
     
     @Override
