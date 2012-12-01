@@ -69,6 +69,7 @@ public class CalendarCell extends JPanel implements MouseListener {
         dayNumberLabel = new JLabel(""+calendar.get(Calendar.DATE));
         dayNumberLabel.setFont(new Font(dayNumberLabel.getFont().getFontName(), Font.BOLD, DATE_SIZE));
         dayNumberLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        dayNumberLabel.setVerticalTextPosition(SwingConstants.TOP);
         add(dayNumberLabel);
     }
     
