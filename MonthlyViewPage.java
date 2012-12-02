@@ -109,14 +109,7 @@ public class MonthlyViewPage extends PagePanel implements ActionListener{
         Date start = calendar.getTime();
         calendar.add(Calendar.DATE, DAYS_IN_WEEK*numWeeksInMonth);
         Date end = calendar.getTime();
-        ArrayList<OneTimeEvent> events = new ArrayList<OneTimeEvent>();
-        Iterator<Event> userEventsIt = SchedulerMain.application.currentUser.getEvents().iterator();
-        while (userEventsIt.hasNext()){
-            Iterator<OneTimeEvent> oneTimeEventIt = userEventsIt.next().getEvents(start, end).iterator();
-            while (oneTimeEventIt.hasNext()){
-                events.add(oneTimeEventIt.next());
-            }
-        }
+        ArrayList<OneTimeEvent> events = SchedulerMain.application.currentUser.getEvents(start, end);
         Collections.sort(events);
         
         // Start at the first Sunday of the calendar

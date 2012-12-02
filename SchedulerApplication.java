@@ -52,8 +52,7 @@ public class SchedulerApplication extends JFrame implements ActionListener {
         viewUser.setEnabled(false);
         viewCalendar.setEnabled(false);
         options.add(addEvent);
-        //TODO: implement View User Page
-        //options.add(viewUser);
+        options.add(viewUser);
         options.add(viewCalendar);
         menuBar.add(options);
         
@@ -100,22 +99,6 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     
     public void logIn(User user){
         currentUser = user;
-        /*
-        // TODO: remove this try-catch block later, used only for testing purposes
-        try {
-            Calendar cal = new GregorianCalendar();
-            cal.set(2012, Calendar.NOVEMBER, 15);
-            currentUser.addEvent(new OneTimeEvent("Project Due Date", null, null, currentUser, cal.getTime(), cal.getTime()));
-            
-            currentUser.addEvent(new YearlyRecurringEvent("Birthday", null, null, currentUser, 0, 0, 23, 59, Calendar.AUGUST, 9, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2013, Calendar.NOVEMBER, 5, false)));
-            currentUser.addEvent(new MonthlyDayRecurringEvent("1st Monday", null, null, currentUser, 12, 0, 12, 30, Calendar.MONDAY, 1, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2013, Calendar.NOVEMBER, 5, false)));
-            currentUser.addEvent(new MonthlyDateRecurringEvent("28th of the month", null, null, currentUser, 18, 0, 18, 45, 28, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2013, Calendar.MAY, 5, false)));
-            currentUser.addEvent(new WeeklyRecurringEvent("CMPSC 221", "IST 220", null, currentUser, 9, 5, 9, 55, Calendar.MONDAY, Utils.createCalendar(2012, Calendar.NOVEMBER, 5, true), Utils.createCalendar(2012, Calendar.DECEMBER, 24, false)));
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        */
         addEvent.setEnabled(true);
         viewUser.setEnabled(true);
         viewCalendar.setEnabled(true);

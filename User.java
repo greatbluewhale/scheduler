@@ -7,7 +7,9 @@
 
 import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.ListIterator;
 
 /**
@@ -20,10 +22,10 @@ public class User {
     private static final int DEFAULT_START_AVAILABILITY = 8;    // 8:00 is the default start availability
     private static final int DEFAULT_END_AVAILABILITY = 18;     // 18:00 is the default end availability
     
-    private String name;                // account username
-    private String password;            // account password
-    private ArrayList<Event> events;    // user's events
-    private TimeBlock availability;     // user's weekly availability
+    private String name;                            // account username
+    private String password;                        // account password
+    private ArrayList<Event> events;                // user's events
+    private TimeBlock availability;   // user's weekly availability
         // This is used for users to control what times they are available during the day.
         // For example, when sleeping at night, the user should be unavailable although the
         // user does not have a scheduled event at the time.
@@ -39,9 +41,10 @@ public class User {
         events = new ArrayList<Event>();
         try {
             availability = new TimeBlock(DEFAULT_START_AVAILABILITY, 0, DEFAULT_END_AVAILABILITY, 0);
-        } catch (Exception e){
+        } catch (Exception e) {
             // Don't do anything, because the TimeBlock being created is definitely valid
         }
+        
     }
     
     /**
@@ -54,7 +57,7 @@ public class User {
         this.name = name;
         this.password = password;
         events = new ArrayList<Event>();
-        this.availability = avilability;
+        this.availability = availability;
     }
     
     /**
@@ -73,20 +76,16 @@ public class User {
         events.remove(deleteEvent);
     }
     
-    /**
-     * Getter for events
-     * @return  list of user's events
-     */
-    public ArrayList<Event> getEvents() {
-        return events;
-    }
-    
-    /**
-     * Resets user's weekly availability
-     * @param newAvailability
-     */
-    public void setAvailability(TimeBlock newAvailability) {
-        availability = newAvailability;
+    public ArrayList<OneTimeEvent> getEvents(Date start, Date end){
+        ArrayList<OneTimeEvent> result = new ArrayList<OneTimeEvent>();
+        Iterator<Event> userEventsIt = events.iterator();
+        while (userEventsIt.hasNext()){
+            Iterator<OneTimeEvent> oneTimeEventIt = userEventsIt.next().getEvents(start, end).iterator();
+            while (oneTimeEventIt.hasNext()){
+                result.add(oneTimeEventIt.next());
+            }
+        }
+        return result;
     }
     
     /**
