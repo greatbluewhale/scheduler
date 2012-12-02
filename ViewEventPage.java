@@ -19,17 +19,12 @@ import javax.swing.*;
  */
 @SuppressWarnings("serial")
 public class ViewEventPage extends PagePanel implements ActionListener {
-    private JPanel  titlePanel;
     private JLabel  title;
-    private JPanel  locationPanel;
     private JLabel  location;
-    private JPanel  datePanel;
+    private JLabel  attendees;
     private JLabel  date;
-    private JPanel  timesPanel;
     private JLabel  times;
-    private JPanel  recurPanel;
     private JLabel  recur;
-    private JPanel  buttonPanel;
     private JButton ok;
     private JButton edit;
     
@@ -38,38 +33,39 @@ public class ViewEventPage extends PagePanel implements ActionListener {
     public ViewEventPage() {
         super();
         
+        JPanel titlePanel = new JPanel();
+        JPanel locationPanel = new JPanel();
+        JPanel attendeesPanel = new JPanel();
+        JPanel datePanel = new JPanel();
+        JPanel timesPanel = new JPanel();
+        JPanel recurPanel = new JPanel();
+        JPanel buttonPanel = new JPanel();
+        
         setLayout(new FlowLayout(FlowLayout.CENTER));
         
-        titlePanel = new JPanel();
         titlePanel.add(new JLabel("Name:"));
         title = new JLabel(" ");
         titlePanel.add(title);
-        //add(titlePanel);
         
-        locationPanel = new JPanel();
         locationPanel.add(new JLabel("Location:"));
         location = new JLabel(" ");
         locationPanel.add(location);
-        //add(locationPanel);
         
-        datePanel = new JPanel();
+        attendeesPanel.add(new JLabel("Attendees:"));
+        attendees = new JLabel(" ");
+        attendeesPanel.add(attendees);
+        
         datePanel.add(new JLabel("Date:"));
         date = new JLabel(" ");
         datePanel.add(date);
-        //add(datePanel);
         
-        timesPanel = new JPanel();
         timesPanel.add(new JLabel("Time:"));
         times = new JLabel(" ");
         timesPanel.add(times);
-        //add(timesPanel);
         
-        recurPanel = new JPanel();
         recur = new JLabel("This event does not repeat.");
         recurPanel.add(recur);
-        //add(recurPanel);
         
-        buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
         ok = new JButton("OK");
         ok.addActionListener(this);
@@ -77,9 +73,8 @@ public class ViewEventPage extends PagePanel implements ActionListener {
         edit = new JButton("Edit");
         edit.addActionListener(this);
         buttonPanel.add(edit);
-        //add(buttonPanel);
         
-        JPanel[] mainPanels = {titlePanel, locationPanel, datePanel, timesPanel, recurPanel, buttonPanel};
+        JPanel[] mainPanels = {titlePanel, locationPanel, attendeesPanel, datePanel, timesPanel, recurPanel, buttonPanel};
         add(Utils.stackPanels(mainPanels));
         
         this.setEnabled(false);
@@ -89,6 +84,7 @@ public class ViewEventPage extends PagePanel implements ActionListener {
     public void activate() {
         title.setText(" ");
         location.setText(" ");
+        attendees.setText(" ");
         date.setText(" ");
         times.setText(" ");
         recur.setText("This event does not repeat.");  
@@ -109,6 +105,7 @@ public class ViewEventPage extends PagePanel implements ActionListener {
         
         title.setText(eventToView.getName());
         location.setText(eventToView.getLocation());
+        attendees.setText("Get users as string");
         
         if (eventToView instanceof OneTimeEvent) {
             startDate.setTime(((OneTimeEvent) eventToView).getStartDate());

@@ -23,7 +23,6 @@ import javax.swing.*;
 public class EditEventPage extends PagePanel implements ActionListener, ItemListener {
     private JTextField titleField;          // text field for user to enter title
     private JTextField locationField;       // text field for user to enter location
-    private JTextField addAttendeeField;    // text field for user to add new attendee
     private JList      attendeesList;       // list of all attendees for user to edit
     private JComboBox  monthDropDown;       // drop-down list to choose month
     private JTextField dayField;            // text field for user to enter day
