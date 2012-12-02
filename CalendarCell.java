@@ -18,15 +18,6 @@ public class CalendarCell extends JPanel implements MouseListener {
     private static final Color TODAY_COLOR = new Color(220, 240, 240);
     private static final int DATE_SIZE = 20;
     
-    private static class EventLabel{
-        public OneTimeEvent event;
-        public JLabel label;
-        public EventLabel(OneTimeEvent event, JLabel label){
-            this.event = event;
-            this.label = label;
-        }
-    }
-    
     private static JPopupMenu popup;
     private static EventLabel selectedEventLabel;
     
