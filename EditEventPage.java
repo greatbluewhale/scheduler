@@ -21,40 +21,27 @@ import javax.swing.*;
  */
 @SuppressWarnings("serial")
 public class EditEventPage extends PagePanel implements ActionListener, ItemListener {
-//    private JPanel     titlePanel;
-//    private String     title;               // object to store title
     private JTextField titleField;          // text field for user to enter title
-//    private JPanel     locationPanel;
-//    private String     location;            // object to store location
     private JTextField locationField;       // text field for user to enter location
-//  private String     attendees;           // who is attending
-//  private JTextField addAttendeeField;    // text field for user to add new attendee
-//  private JList      attendeesList;       // list of all attendees for user to edit
-//    private JPanel     datePanel;
-//    private Calendar   date;                // Date object to store in event
+    private JTextField addAttendeeField;    // text field for user to add new attendee
+    private JList      attendeesList;       // list of all attendees for user to edit
     private JComboBox  monthDropDown;       // drop-down list to choose month
     private JTextField dayField;            // text field for user to enter day
     private JTextField yearField;           // text field for user to enter year
-//    private JPanel     timesPanel;
-//    private TimeBlock  times;               // block of time stored in event
     private JTextField startHourField;      // text field for user to enter hour of start time
     private JTextField startMinField;       // text field for user to enter minute of start time
     private JComboBox  startAMPMDropDown;   // drop-down list to choose AM/PM of start time
     private JTextField endHourField;        // text field for user to enter hour of end time
     private JTextField endMinField;         // text field for user to enter minute of end time
     private JComboBox  endAMPMDropDown;     // drop-down list to choose AM/PM of end time
-//    private JPanel     recurPanel;
-//    private Boolean    isRecurring;         // is the event a recurring event?
     private JCheckBox  isRecurringBox;      // check box for user to select recurring event
     private RecurType  recurType;           // type of recurrance
                                                 // NOTE: recurrance parameters inferred from date
     private JComboBox  recurDropDown;       // drop-down list for types of recurring events
     private JPanel     stopDatePanel;
-//    private Calendar   stopDate;
     private JComboBox  stopMonthDropDown;
     private JTextField stopDayField;
     private JTextField stopYearField;
-//    private JPanel     buttonPanel;
     private JButton    ok;
     private JButton    cancel;
     private JLabel     messageLabel;        // label for displaying error messages to user
@@ -77,29 +64,31 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
     public EditEventPage() {
         super();
         
-        JPanel titlePanel;
-        JPanel locationPanel;
-        JPanel datePanel;
-        JPanel timesPanel;
-        JPanel recurPanel;
-        JPanel buttonPanel;
-        JPanel messagePanel;
+        JPanel titlePanel = new JPanel();
+        JPanel locationPanel = new JPanel();
+        JPanel attendeesPanel = new JPanel();
+        JPanel datePanel = new JPanel();
+        JPanel timesPanel = new JPanel();
+        JPanel recurPanel = new JPanel();
+        JPanel buttonPanel = new JPanel();
+        JPanel messagePanel = new JPanel();
+        
+        stopDatePanel = new JPanel();
         
         setLayout(new FlowLayout(FlowLayout.CENTER));
         
-        titlePanel = new JPanel();
         titlePanel.add(new JLabel("Name:"));
         titleField = new JTextField(30);
         titlePanel.add(titleField);
-        //add(titlePanel);
         
-        locationPanel = new JPanel();
         locationPanel.add(new JLabel("Location:"));
         locationField = new JTextField(30);
         locationPanel.add(locationField);
-        //add(locationPanel);
         
-        datePanel = new JPanel();
+        attendeesPanel.add(new JLabel("Attendees:"));
+        attendeesList = new JList(/*Get ALL the users*/);
+        attendeesPanel.add(attendeesList);
+        
         datePanel.add(new JLabel("Start Date:"));
         monthDropDown = new JComboBox(MONTHS);
         datePanel.add(monthDropDown);
@@ -108,9 +97,7 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         datePanel.add(new JLabel(","));
         yearField = new JTextField(4);
         datePanel.add(yearField);
-        //add(datePanel);
         
-        timesPanel = new JPanel();
         timesPanel.add(new JLabel("Time:"));
         startHourField = new JTextField(2);
         timesPanel.add(startHourField); 
@@ -127,9 +114,7 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         timesPanel.add(endMinField);
         endAMPMDropDown = new JComboBox(new String[] {"AM", "PM"} );
         timesPanel.add(endAMPMDropDown);
-        //add(timesPanel);
         
-        recurPanel = new JPanel();
         isRecurringBox = new JCheckBox("Recurring Event:");
         isRecurringBox.addItemListener(this);
         recurPanel.add(isRecurringBox);
@@ -138,9 +123,7 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         recurDropDown.addActionListener(this);
         recurDropDown.setEditable(false);
         recurPanel.add(recurDropDown);
-        //add(recurPanel);
         
-        stopDatePanel = new JPanel();
         stopDatePanel.add(new JLabel("Stop Date:"));
         stopMonthDropDown = new JComboBox(MONTHS);
         stopMonthDropDown.setEditable(false);
@@ -153,23 +136,19 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         stopYearField.setEditable(false);
         stopDatePanel.add(stopYearField);
         stopDatePanel.setVisible(false);
-        //add(stopDatePanel);
         
-        buttonPanel = new JPanel();
         ok = new JButton("OK");
         ok.addActionListener(this);
         buttonPanel.add(ok);
         cancel = new JButton("Cancel");
         cancel.addActionListener(this);
         buttonPanel.add(cancel);
-        //add(buttonPanel);
         
-        messagePanel = new JPanel();
         messageLabel = new JLabel();
         messageLabel.setForeground(Color.RED);
         messagePanel.add(messageLabel);
         
-        JPanel[] mainPanels = {titlePanel, locationPanel, datePanel, timesPanel, recurPanel, stopDatePanel, buttonPanel, messagePanel};
+        JPanel[] mainPanels = {titlePanel, locationPanel, attendeesPanel, datePanel, timesPanel, recurPanel, stopDatePanel, buttonPanel, messagePanel};
         add(Utils.stackPanels(mainPanels));
         
         this.setEnabled(false);
@@ -189,6 +168,7 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         
         titleField.setText("");
         locationField.setText("");
+        attendeesList.clearSelection();
         
         monthDropDown.setSelectedIndex(today.get(Calendar.MONTH));
         dayField.setText(Integer.toString(today.get(Calendar.DATE)));

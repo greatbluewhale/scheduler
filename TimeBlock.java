@@ -30,9 +30,11 @@ public class TimeBlock {
      */
     public TimeBlock() {
         Calendar today = Calendar.getInstance();
-        startHour = today.get(Calendar.HOUR) + 1;
+        today.add(Calendar.HOUR_OF_DAY, 1);
+        startHour = today.get(Calendar.HOUR_OF_DAY);
         startMinute = 0;
-        endHour = today.get(Calendar.HOUR) + 2;
+        today.add(Calendar.HOUR_OF_DAY, 1);
+        endHour = today.get(Calendar.HOUR_OF_DAY);
         endMinute = 0;
     }
     
