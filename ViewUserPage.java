@@ -12,6 +12,7 @@ public class ViewUserPage extends PagePanel {
     private static final int UPCOMING_EVENTS_SIZE = 5;
     
     private JLabel usernameLabel = new JLabel();
+    private JPanel upcomingEventsPanel = new JPanel();
     private JPanel availabilityPanel = new JPanel();
     
     public ViewUserPage(){
