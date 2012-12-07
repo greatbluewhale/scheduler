@@ -3,6 +3,8 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 @SuppressWarnings("serial")
@@ -13,8 +15,8 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     private final int MINIMUM_WIDTH = 800;
     private final int MINIMUM_HEIGHT = 600;
     
-    private final String ENABLE_WEATHER = "Enable Weather Feature";
-    private final String DISABLE_WEATHER = "Disable Weather Feature";
+    private final String ENABLE_WEATHER = "Show Weather on Calendar";
+    private final String DISABLE_WEATHER = "Hide Weather on Calendar";
     
     private boolean isWeatherEnabled = true;
     
@@ -40,6 +42,7 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     private PagePanel[] pages = {new LoginPage(), new MonthlyViewPage(), new EditEventPage(), new ViewEventPage(), new ViewUserPage()};
     
     public User currentUser;
+    public ArrayList<User> allUsers = new ArrayList<User>();
     
     public void startup(){
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -152,21 +155,23 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     }
     
     public void showDeletePopup(Event ev){
-        // TODO: make a confirmation popup
-        deleteEvent(ev);
-        showMonthlyView();
+        String[] options = {"Delete Event", "Cancel"};
+        int choice = JOptionPane.showOptionDialog(this, "Are you sure?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, 0);
+        if (choice == 0){
+            deleteEvent(ev);
+            showMonthlyView();
+        }
     }
     
     public void addEvent(Event ev){
-        ev.creator.addEvent(ev);
-        if (ev.attendees != null){
-            for (User person : ev.attendees){
-                person.addEvent(ev);
-            }
+        // No need to maintain a list of events for any user except the current user
+        if (ev.creator == currentUser){
+            ev.creator.addEvent(ev);
         }
     }
     
     public void editEvent(Event oldEvent, Event newEvent){
+        // No need to maintain a list of events for any user except the current user
         // TODO: risky! we're changing the pointer instead of the object
         User user = oldEvent.creator;
         user.deleteEvent(oldEvent);
@@ -174,11 +179,9 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     }
     
     public void deleteEvent(Event ev){
-        ev.creator.deleteEvent(ev);
-        if (ev.attendees != null){
-            for (User person : ev.attendees){
-                person.deleteEvent(ev);
-            }
+        // No need to maintain a list of events for any user except the current user
+        if (ev.creator == currentUser){
+            ev.creator.deleteEvent(ev);
         }
     }
 }

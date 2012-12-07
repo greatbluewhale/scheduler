@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -110,7 +109,6 @@ public class MonthlyViewPage extends PagePanel implements ActionListener{
         calendar.add(Calendar.DATE, DAYS_IN_WEEK*numWeeksInMonth);
         Date end = calendar.getTime();
         ArrayList<OneTimeEvent> events = SchedulerMain.application.currentUser.getEvents(start, end);
-        Collections.sort(events);
         
         // Start at the first Sunday of the calendar
         calendar.set(month.get(Calendar.YEAR), calendarMonth, 1, 0, 0);
