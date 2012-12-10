@@ -67,8 +67,16 @@ public class CalendarCell extends JPanel implements MouseListener {
     public void addEvent(OneTimeEvent event){
         JLabel label = new JLabel(event.getName());
         add(label);
-        list.add(new EventLabel(event, label));
         label.addMouseListener(this);
+        Iterator<EventLabel> it = list.iterator();
+        while (it.hasNext()){
+            EventLabel el = it.next();
+            if (el.event.getEndDate().after(event.getStartDate())){
+                el.label.setForeground(Color.RED);
+                label.setForeground(Color.RED);
+            }
+        }
+        list.add(new EventLabel(event, label));
     }
     
     public void addWeatherIcon(ImageIcon icon){
