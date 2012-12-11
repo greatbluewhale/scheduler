@@ -331,6 +331,20 @@ public abstract class SQL {
         }
     }
     
+    public static void updateUser(User newUser) {
+        try {
+            stmt.execute(String.format("update users set password='%s', avail_start='%d:%d', avail_end='%d:%d' where user_id='%s'",
+                                       newUser.getPassword(),
+                                       newUser.getDailyAvailability().getStartHour(),
+                                       newUser.getDailyAvailability().getStartMinute(),
+                                       newUser.getDailyAvailability().getEndHour(),
+                                       newUser.getDailyAvailability().getEndMinute(),
+                                       newUser.getName()));
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+    }
+    
     public static void deleteEvent(int eventID) {
         try {           
             stmt.execute(String.format("delete from users_events where event_id=%d", eventID));
