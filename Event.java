@@ -16,6 +16,7 @@ import java.util.Date;
  * @author Nick
  */
 public abstract class Event {
+    protected int eventID;      // the ID of the event in the SQL database
     protected String name;      // the name of the event
     protected String location;  // the location of the event
     protected User[] attendees; // the users attending the event
@@ -33,6 +34,14 @@ public abstract class Event {
         this.location = location;
         this.attendees = attendees;
         this.creator = creator;
+    }
+    
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
+    }
+    
+    public int getEventID() {
+        return eventID;
     }
     
     /**

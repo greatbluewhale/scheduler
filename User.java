@@ -91,6 +91,13 @@ public class User {
     }
     
     /**
+     * Returns user's general day-to-day availability
+     */
+    public TimeBlock getDailyAvailability() {
+        return availability;
+    }
+    
+    /**
      * Gets a user's availability on a given day, including scheduled events
      * @param day   the given day
      * @return      a strictly sorted list of times the user is available

@@ -8,7 +8,9 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.ListIterator;
 
 /**
  * @author Nick
@@ -26,7 +28,7 @@ public abstract class SQL {
                                                        "root");
             stmt = dbConnection.createStatement();
         } catch (Exception ex) {
-            // TODO
+            ex.printStackTrace();
         }
     }
     
@@ -35,6 +37,7 @@ public abstract class SQL {
      */
     public static ArrayList<Event> pullEvents() {
         ArrayList<Event> events = new ArrayList<Event>();
+        Event event;
         Calendar startDate = new GregorianCalendar();
         Calendar endDate = new GregorianCalendar();
         try {
@@ -46,88 +49,100 @@ public abstract class SQL {
                 try {
                     switch (results.getInt("recurrence")) {
                     case 0:
-                        endDate = startDate;
+                        endDate.setTime(startDate.getTime());
                         startDate.set(Calendar.HOUR, results.getTime("start_time").getHours());
                         startDate.set(Calendar.MINUTE, results.getTime("start_time").getMinutes());
                         endDate.set(Calendar.HOUR, results.getTime("end_time").getHours());
                         endDate.set(Calendar.MINUTE, results.getTime("end_time").getMinutes());
-                        events.add(new OneTimeEvent(results.getString("title"), 
-                                                    results.getString("location"),
-                                                    null,
-                                                    user,
-                                                    startDate.getTime(),
-                                                    endDate.getTime()));
+                        event = new OneTimeEvent(results.getString("title"), 
+                                                 results.getString("location"),
+                                                 null,
+                                                 user,
+                                                 startDate.getTime(),
+                                                 endDate.getTime());
+                        event.setEventID(results.getInt("event_id"));
+                        events.add(event);
                         break;
                     case 1:
                         endDate.setTime(results.getTime("end_date"));
-                        events.add(new DailyRecurringEvent(results.getString("title"),
-                                                           results.getString("location"),
-                                                           null,
-                                                           user,
-                                                           results.getTime("start_time").getHours(),
-                                                           results.getTime("start_time").getMinutes(),
-                                                           results.getTime("end_time").getHours(),
-                                                           results.getTime("end_time").getMinutes(),
-                                                           startDate,
-                                                           endDate));
+                        event = new DailyRecurringEvent(results.getString("title"),
+                                                        results.getString("location"),
+                                                        null,
+                                                        user,
+                                                        results.getTime("start_time").getHours(),
+                                                        results.getTime("start_time").getMinutes(),
+                                                        results.getTime("end_time").getHours(),
+                                                        results.getTime("end_time").getMinutes(),
+                                                        startDate,
+                                                        endDate);
+                        event.setEventID(results.getInt("event_id"));
+                        events.add(event);
                         break;
                     case 2:
                         endDate.setTime(results.getTime("end_date"));
-                        events.add(new WeeklyRecurringEvent(results.getString("title"),
-                                                            results.getString("location"),
-                                                            null,
-                                                            user,
-                                                            results.getTime("start_time").getHours(),
-                                                            results.getTime("start_time").getMinutes(),
-                                                            results.getTime("end_time").getHours(),
-                                                            results.getTime("end_time").getMinutes(),
-                                                            startDate.get(Calendar.DAY_OF_WEEK),
-                                                            startDate,
-                                                            endDate));
+                        event = new WeeklyRecurringEvent(results.getString("title"),
+                                                         results.getString("location"),
+                                                         null,
+                                                         user,
+                                                         results.getTime("start_time").getHours(),
+                                                         results.getTime("start_time").getMinutes(),
+                                                         results.getTime("end_time").getHours(),
+                                                         results.getTime("end_time").getMinutes(),
+                                                         startDate.get(Calendar.DAY_OF_WEEK),
+                                                         startDate,
+                                                         endDate);
+                        event.setEventID(results.getInt("event_id"));
+                        events.add(event);
                         break;
                     case 3:
                         endDate.setTime(results.getTime("end_date"));
-                        events.add(new MonthlyDateRecurringEvent(results.getString("title"),
-                                                                 results.getString("location"),
-                                                                 null,
-                                                                 user,
-                                                                 results.getTime("start_time").getHours(),
-                                                                 results.getTime("start_time").getMinutes(),
-                                                                 results.getTime("end_time").getHours(),
-                                                                 results.getTime("end_time").getMinutes(),
-                                                                 startDate.get(Calendar.DATE),
-                                                                 startDate,
-                                                                 endDate));
+                        event = new MonthlyDateRecurringEvent(results.getString("title"),
+                                                              results.getString("location"),
+                                                              null,
+                                                              user,
+                                                              results.getTime("start_time").getHours(),
+                                                              results.getTime("start_time").getMinutes(),
+                                                              results.getTime("end_time").getHours(),
+                                                              results.getTime("end_time").getMinutes(),
+                                                              startDate.get(Calendar.DATE),
+                                                              startDate,
+                                                              endDate);
+                        event.setEventID(results.getInt("event_id"));
+                        events.add(event);
                         break;
                     case 4:
                         endDate.setTime(results.getTime("end_date"));
-                        events.add(new MonthlyDayRecurringEvent(results.getString("title"),
-                                                                results.getString("location"),
-                                                                null,
-                                                                user,
-                                                                results.getTime("start_time").getHours(),
-                                                                results.getTime("start_time").getMinutes(),
-                                                                results.getTime("end_time").getHours(),
-                                                                results.getTime("end_time").getMinutes(),
-                                                                startDate.get(Calendar.DAY_OF_WEEK),
-                                                                startDate.get(Calendar.DAY_OF_WEEK_IN_MONTH),
-                                                                startDate,
-                                                                endDate));
+                        event = new MonthlyDayRecurringEvent(results.getString("title"),
+                                                             results.getString("location"),
+                                                             null,
+                                                             user,
+                                                             results.getTime("start_time").getHours(),
+                                                             results.getTime("start_time").getMinutes(),
+                                                             results.getTime("end_time").getHours(),
+                                                             results.getTime("end_time").getMinutes(),
+                                                             startDate.get(Calendar.DAY_OF_WEEK),
+                                                             startDate.get(Calendar.DAY_OF_WEEK_IN_MONTH),
+                                                             startDate,
+                                                             endDate);
+                        event.setEventID(results.getInt("event_id"));
+                        events.add(event);
                         break;
                     case 5:
                         endDate.setTime(results.getTime("end_date"));
-                        events.add(new YearlyRecurringEvent(results.getString("title"),
-                                                            results.getString("location"),
-                                                            null,
-                                                            user,
-                                                            results.getTime("start_time").getHours(),
-                                                            results.getTime("start_time").getMinutes(),
-                                                            results.getTime("end_time").getHours(),
-                                                            results.getTime("end_time").getMinutes(),
-                                                            startDate.get(Calendar.MONTH),
-                                                            startDate.get(Calendar.DATE),
-                                                            startDate,
-                                                            endDate));
+                        event = new YearlyRecurringEvent(results.getString("title"),
+                                                         results.getString("location"),
+                                                         null,
+                                                         user,
+                                                         results.getTime("start_time").getHours(),
+                                                         results.getTime("start_time").getMinutes(),
+                                                         results.getTime("end_time").getHours(),
+                                                         results.getTime("end_time").getMinutes(),
+                                                         startDate.get(Calendar.MONTH),
+                                                         startDate.get(Calendar.DATE),
+                                                         startDate,
+                                                         endDate);
+                        event.setEventID(results.getInt("event_id"));
+                        events.add(event);
                         break;
                     default:
                         break;
@@ -165,7 +180,19 @@ public abstract class SQL {
         return users;
     }
     
-    public static void createEvent(String name, String location, Calendar startDate, TimeBlock times, int recurrence, Calendar stopDate, User[] attendees) throws SQLException {
+    /**
+     * Creates an event and returns the eventID
+     * @param name
+     * @param location
+     * @param startDate
+     * @param times
+     * @param recurrence
+     * @param stopDate
+     * @param attendees
+     * @return event_id of created event
+     * @throws SQLException
+     */
+    public static int createEvent(String name, String location, User[] attendees, Calendar startDate, TimeBlock times, int recurrence, Calendar stopDate) throws SQLException {
         ResultSet results = stmt.executeQuery("select max(event_id) from events");
         results.next();
         int eventID = results.getInt(1);
@@ -214,11 +241,31 @@ public abstract class SQL {
             stmt.execute(String.format("insert into user_events (user_id, event_id) values ('%s', %d)",
                                        attendee.getName(), eventID));
         }
+        
+        return eventID;
+    }
+    
+    public static void createUser(User newUser) {
+        try {
+            stmt.execute(String.format("insert into users (user_id, password, avail_start, avail_end) values ('%s', '%s', '%d:%d', '%d:%d')",
+                                       newUser.getName(), newUser.getPassword(),
+                                       newUser.getDailyAvailability().getStartHour(),
+                                       newUser.getDailyAvailability().getStartMinute(),
+                                       newUser.getDailyAvailability().getEndHour(),
+                                       newUser.getDailyAvailability().getEndMinute()));
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
     }
     
     public static void updateEvent(int eventID, String name, String location, Calendar startDate, TimeBlock times, int recurrence, Calendar endDate, User[] attendees) {
         ArrayList<String> newUserIDs = new ArrayList<String>();
+        ListIterator<String> newIt; // iterator for newUserIDs
+        String newUser;             // next String in newUserIDs
         ArrayList<String> oldUserIDs = new ArrayList<String>();
+        ListIterator<String> oldIt; // iterator for oldUserIDs
+        String oldUser;             // next String in oldUserIDs
+        int compareTo;              // result of newUser.compareTo(oldUser)
         ResultSet results;
         
         try {
@@ -243,18 +290,71 @@ public abstract class SQL {
             for (User attendee : attendees) {
                 newUserIDs.add(attendee.getName());
             }
-            results = stmt.executeQuery("select user_id from users_events");
+            Collections.sort(newUserIDs);
+            results = stmt.executeQuery("select user_id from users_events order by user_id");
             while (results.next()) {
-                
+                oldUserIDs.add(results.getString("user_id"));
             }
+            newIt = newUserIDs.listIterator();
+            oldIt = oldUserIDs.listIterator();
             
+            while (newIt.hasNext() && oldIt.hasNext()) {
+                newUser = newIt.next();
+                oldUser = oldIt.next();
+                compareTo = newUser.compareTo(oldUser);
+                
+                if (compareTo < 0) {
+                    // a user was added
+                    stmt.execute(String.format("insert into users_events (user_id, event_id) values ('%s', %d)",
+                                               newUser, eventID));
+                    oldIt.previous();
+                } else if (compareTo > 0) {
+                    // a user was removed
+                    stmt.execute(String.format("delete from users_events where user_id='%s' and event_id=%d",
+                                               oldUser, eventID));
+                    newIt.previous();
+                }
+            }
+            // Add any remaining new users
+            while (newIt.hasNext()) {
+                stmt.execute(String.format("insert into users_events (user_id, event_id) values ('%s', %d)",
+                                           newIt.next(), eventID));
+            }
+            // Delete any remaining old users
+            while (oldIt.hasNext()) {
+                stmt.execute(String.format("delete from users_events where user_id='%s' and event_id=%d",
+                                           oldIt.next(), eventID));
+            }
             
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
     }
     
-    public static void createUser(User newUser) {
-        stmt.execute(String.format("insert into users, args))
+    public static void deleteEvent(int eventID) {
+        try {           
+            stmt.execute(String.format("delete from users_events where event_id=%d", eventID));
+            stmt.execute(String.format("delete from events where event_id=%d", eventID));
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+    }
+    
+    public static void deleteEvent(Event event) {
+        deleteEvent(event.getEventID());
+    }
+    
+    /**
+     * Deletes user and all their events
+     * @param user
+     */
+    public static void deleteUser(User user) {
+        try {
+            stmt.execute(String.format("delete from users_events where user_id='%s'", user.getName()));
+            stmt.execute(String.format("delete from events where creator_id='%s'", user.getName()));
+            stmt.execute(String.format("delete from users where user_id='%s'", user.getName()));
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
     }
 }
