@@ -23,8 +23,7 @@ public abstract class SQL {
     
     static {
         try {
-            dbConnection = DriverManager.getConnection("jdbc:derby://localhost:1527/scheduler", "root",
-                                                       "root");
+            dbConnection = DriverManager.getConnection("jdbc:derby://localhost:1527/scheduler", "root", "root");
             stmt = dbConnection.createStatement();
         } catch (Exception ex) {
             ex.printStackTrace();
