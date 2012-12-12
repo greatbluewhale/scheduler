@@ -5,8 +5,10 @@
  * Date:    10/8/12
  */
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
 /**
  * This class represents an event that occurs only once (and does not repeat).
@@ -78,5 +80,30 @@ public class OneTimeEvent extends Event implements Comparable<OneTimeEvent> {
     @Override
     public int compareTo(OneTimeEvent other) {
         return this.start.compareTo(other.start);
+    }
+    
+    public Calendar getStartEventCalendar(){
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(this.start);
+        return cal;
+    }
+    
+    public TimeBlock getTimes(){
+        Calendar startCal = new GregorianCalendar();
+        Calendar endCal = new GregorianCalendar();
+        startCal.setTime(start);
+        endCal.setTime(end);
+        try {
+            return new TimeBlock(startCal.get(Calendar.HOUR_OF_DAY), startCal.get(Calendar.MINUTE), 
+                    endCal.get(Calendar.HOUR_OF_DAY), endCal.get(Calendar.MINUTE));
+        } catch (Exception e) {
+            // suppress
+            return null;
+        }
+    }
+
+    @Override
+    public int getRecurrence() {
+        return 0;
     }
 }

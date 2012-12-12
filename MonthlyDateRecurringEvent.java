@@ -58,4 +58,9 @@ public class MonthlyDateRecurringEvent extends RecurringEvent {
     protected void nextEvent(Calendar time) {
         time.add(Calendar.MONTH, 1);
     }
+
+    @Override
+    public int getRecurrence() {
+        return 3;
+    }
 }

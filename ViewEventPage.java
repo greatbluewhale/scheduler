@@ -105,7 +105,18 @@ public class ViewEventPage extends PagePanel implements ActionListener {
         
         title.setText(eventToView.getName());
         location.setText(eventToView.getLocation());
-        attendees.setText("Get users as string");
+        
+        StringBuilder attendeesText = new StringBuilder();
+        User[] attendeesArray = eventToView.getAttendees();
+        if (attendeesArray != null && attendeesArray.length > 0){
+            attendeesText.append(attendeesArray[0].getName());
+            for (int i=1; i<attendeesArray.length; i++){
+                attendeesText.append(attendeesArray[i].getName());
+            }
+        } else {
+            attendeesText.append("none");
+        }
+        attendees.setText(attendeesText.toString());
         
         if (eventToView instanceof OneTimeEvent) {
             startDate.setTime(((OneTimeEvent) eventToView).getStartDate());

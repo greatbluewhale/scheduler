@@ -59,4 +59,9 @@ public class WeeklyRecurringEvent extends RecurringEvent {
     protected void nextEvent(Calendar time){
         time.add(Calendar.WEEK_OF_YEAR, 1);
     }
+
+    @Override
+    public int getRecurrence() {
+        return 2;
+    }
 }

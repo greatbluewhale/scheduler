@@ -3,7 +3,9 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.*;
 
@@ -42,11 +44,13 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     private PagePanel[] pages = {new LoginPage(), new MonthlyViewPage(), new EditEventPage(), new ViewEventPage(), new ViewUserPage()};
     
     public User currentUser;
-    public ArrayList<User> allUsers = new ArrayList<User>();
+    public ArrayList<User> allUsers;
     
     public void startup(){
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle(SchedulerMain.TITLE);
+        
+        allUsers = SQL.getAllUsers();
         
         JMenuBar menuBar = new JMenuBar();
         
@@ -101,7 +105,13 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     }
     
     public void logIn(User user){
-        currentUser = user;
+        currentUser = SQL.user = user;
+        ArrayList<Event> events = SQL.pullEvents();
+        Iterator<Event> it = events.iterator();
+        while (it.hasNext()){
+            user.addEvent(it.next());
+        }
+        
         addEvent.setEnabled(true);
         viewUser.setEnabled(true);
         viewCalendar.setEnabled(true);
@@ -163,10 +173,47 @@ public class SchedulerApplication extends JFrame implements ActionListener {
         }
     }
     
+    public String[] getOtherUsernames(){
+        String[] array;
+        int size = allUsers.size();
+        if (size <= 1){
+            array = new String[0];
+        } else {
+            array = new String[size-1];
+            Iterator<User> it = allUsers.iterator();
+            int i=0;
+            while (it.hasNext() && i<size-1){
+                String name = it.next().getName();
+                if (name.compareTo(currentUser.getName()) != 0){
+                    array[i++] = name;
+                }
+            }
+        }
+        return array;
+    }
+    
+    public User searchForUser(String name){
+        Iterator<User> it = allUsers.iterator();
+        while (it.hasNext()){
+            User user = it.next();
+            if (user.getName().compareTo(name) == 0){
+                return user;
+            }
+        }
+        return null;
+    }
+    
     public void addEvent(Event ev){
         // No need to maintain a list of events for any user except the current user
         if (ev.creator == currentUser){
             ev.creator.addEvent(ev);
+            try {
+                SQL.createEvent(ev.getName(), ev.getLocation(), ev.getAttendees(), ev.getStartEventCalendar(), 
+                        ev.getTimes(), ev.getRecurrence(), ev.getEndEventCalendar());
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
     
@@ -176,12 +223,16 @@ public class SchedulerApplication extends JFrame implements ActionListener {
         User user = oldEvent.creator;
         user.deleteEvent(oldEvent);
         user.addEvent(newEvent);
+        SQL.updateEvent(newEvent.getEventID(), newEvent.getName(), newEvent.getLocation(), newEvent.getStartEventCalendar(), 
+                newEvent.getTimes(), newEvent.getRecurrence(), newEvent.getEndEventCalendar(), newEvent.getAttendees());
+        
     }
     
     public void deleteEvent(Event ev){
         // No need to maintain a list of events for any user except the current user
         if (ev.creator == currentUser){
             ev.creator.deleteEvent(ev);
+            SQL.deleteEvent(ev);
         }
     }
 }

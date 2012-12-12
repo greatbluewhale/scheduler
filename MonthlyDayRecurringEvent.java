@@ -66,4 +66,9 @@ public class MonthlyDayRecurringEvent extends RecurringEvent {
         time.set(Calendar.DAY_OF_WEEK_IN_MONTH, weekOfMonth);
     }
 
+    @Override
+    public int getRecurrence() {
+        return 4;
+    }
+
 }

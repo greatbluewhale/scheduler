@@ -3,8 +3,8 @@ public class SchedulerMain {
     
     // TODO: The following members are temporary and should be removed once 
     // SQL support is introduced
-    public static String testUsername = "testuser";
-    public static String testPassword = "abc123";
+    public static String testUsername = "nickdyszel";
+    public static String testPassword = "password";
     
     public static SchedulerApplication application;
     

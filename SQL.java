@@ -22,7 +22,6 @@ public abstract class SQL {
     public static User user;
     
     static {
-        user = SchedulerMain.application.currentUser;
         try {
             dbConnection = DriverManager.getConnection("jdbc:derby://localhost:1527/scheduler", "root",
                                                        "root");
@@ -42,11 +41,11 @@ public abstract class SQL {
         Calendar endDate = new GregorianCalendar();
         try {
             ResultSet results = stmt.executeQuery(String.format(
-                    "select * from events where event_id in (select event_id from users_events where user_id='%s'",
+                    "select * from events where event_id in (select event_id from users_events where user_id='%s')",
                     user.getName()));
-            startDate.setTime(results.getDate("start_date"));
             while (results.next()) {
                 try {
+                    startDate.setTime(results.getDate("start_date"));
                     switch (results.getInt("recurrence")) {
                     case 0:
                         endDate.setTime(startDate.getTime());
@@ -64,7 +63,7 @@ public abstract class SQL {
                         events.add(event);
                         break;
                     case 1:
-                        endDate.setTime(results.getTime("end_date"));
+                        endDate.setTime(results.getDate("stop_date"));
                         event = new DailyRecurringEvent(results.getString("title"),
                                                         results.getString("location"),
                                                         null,
@@ -79,7 +78,7 @@ public abstract class SQL {
                         events.add(event);
                         break;
                     case 2:
-                        endDate.setTime(results.getTime("end_date"));
+                        endDate.setTime(results.getDate("stop_date"));
                         event = new WeeklyRecurringEvent(results.getString("title"),
                                                          results.getString("location"),
                                                          null,
@@ -95,7 +94,7 @@ public abstract class SQL {
                         events.add(event);
                         break;
                     case 3:
-                        endDate.setTime(results.getTime("end_date"));
+                        endDate.setTime(results.getDate("stop_date"));
                         event = new MonthlyDateRecurringEvent(results.getString("title"),
                                                               results.getString("location"),
                                                               null,
@@ -111,7 +110,7 @@ public abstract class SQL {
                         events.add(event);
                         break;
                     case 4:
-                        endDate.setTime(results.getTime("end_date"));
+                        endDate.setTime(results.getDate("stop_date"));
                         event = new MonthlyDayRecurringEvent(results.getString("title"),
                                                              results.getString("location"),
                                                              null,
@@ -128,7 +127,7 @@ public abstract class SQL {
                         events.add(event);
                         break;
                     case 5:
-                        endDate.setTime(results.getTime("end_date"));
+                        endDate.setTime(results.getDate("stop_date"));
                         event = new YearlyRecurringEvent(results.getString("title"),
                                                          results.getString("location"),
                                                          null,
@@ -195,50 +194,50 @@ public abstract class SQL {
     public static int createEvent(String name, String location, User[] attendees, Calendar startDate, TimeBlock times, int recurrence, Calendar stopDate) throws SQLException {
         ResultSet results = stmt.executeQuery("select max(event_id) from events");
         results.next();
-        int eventID = results.getInt(1);
+        int eventID = results.getInt(1) + 1;
         
         // Add event
         if (location == null) {
             if (recurrence == 0) {
                 stmt.execute(String.format(
-                        "insert into events (event_id, title, user_id, start_date, start_time, end_time, recurrence) values (%d, '%s', '%s', '%d-%d-%d', '%d:%d', '%d:%d', 0)",
+                        "insert into events (event_id, title, user_id, start_date, start_time, end_time, recurrence) values (%d, '%s', '%s', '%d-%d-%d', '%d:%s', '%d:%s', 0)",
                         eventID, name, user.getName(), startDate.get(Calendar.YEAR),
-                        startDate.get(Calendar.MONTH), startDate.get(Calendar.DATE),
-                        times.getStartHour(), times.getStartMinute(), times.getEndHour(),
-                        times.getEndMinute()));
+                        startDate.get(Calendar.MONTH)+1, startDate.get(Calendar.DATE),
+                        times.getStartHour(), Utils.getTwoDigitNumber(times.getStartMinute()), times.getEndHour(),
+                        Utils.getTwoDigitNumber(times.getEndMinute())));
             } else {
                 stmt.execute(String.format(
-                        "insert into events (event_id, title, user_id, start_date, start_time, end_time, recurrence, stop_date) values (%d, '%s', '%s', '%d-%d-%d', '%d:%d', '%d:%d', %d, '%d-%d-%d')",
+                        "insert into events (event_id, title, user_id, start_date, start_time, end_time, recurrence, stop_date) values (%d, '%s', '%s', '%d-%d-%d', '%d:%s', '%d:%s', %d, '%d-%d-%d')",
                         eventID, name, user.getName(), startDate.get(Calendar.YEAR),
-                        startDate.get(Calendar.MONTH), startDate.get(Calendar.DATE),
-                        times.getStartHour(), times.getStartMinute(), times.getEndHour(),
-                        times.getEndMinute(), recurrence, stopDate.get(Calendar.YEAR),
-                        stopDate.get(Calendar.MONTH), stopDate.get(Calendar.DATE)));
+                        startDate.get(Calendar.MONTH)+1, startDate.get(Calendar.DATE),
+                        times.getStartHour(), Utils.getTwoDigitNumber(times.getStartMinute()), times.getEndHour(),
+                        Utils.getTwoDigitNumber(times.getEndMinute()), recurrence, stopDate.get(Calendar.YEAR),
+                        stopDate.get(Calendar.MONTH)+1, stopDate.get(Calendar.DATE)));
             }
         } else {
             if (recurrence == 0) {
                 stmt.execute(String.format(
-                        "insert into events (event_id, title, location, user_id, start_date, start_time, end_time, recurrence) values (%d, '%s', '%s', '%s', '%d-%d-%d', '%d:%d', '%d:%d', 0)",
+                        "insert into events (event_id, title, location, user_id, start_date, start_time, end_time, recurrence) values (%d, '%s', '%s', '%s', '%d-%d-%d', '%d:%s', '%d:%s', 0)",
                         eventID, name, location, user.getName(), startDate.get(Calendar.YEAR),
-                        startDate.get(Calendar.MONTH), startDate.get(Calendar.DATE),
-                        times.getStartHour(), times.getStartMinute(), times.getEndHour(),
-                        times.getEndMinute()));
+                        startDate.get(Calendar.MONTH)+1, startDate.get(Calendar.DATE),
+                        times.getStartHour(), Utils.getTwoDigitNumber(times.getStartMinute()), times.getEndHour(),
+                        Utils.getTwoDigitNumber(times.getEndMinute())));
             } else {
                 stmt.execute(String.format(
-                        "insert into events (event_id, title, location, user_id, start_date, start_time, end_time, recurrence, stop_date) values (%d, '%s', '%s', '%s', '%d-%d-%d', '%d:%d', '%d:%d', %d, '%d-%d-%d')",
+                        "insert into events (event_id, title, location, user_id, start_date, start_time, end_time, recurrence, stop_date) values (%d, '%s', '%s', '%s', '%d-%d-%d', '%d:%s', '%d:%s', %d, '%d-%d-%d')",
                         eventID, name, location, user.getName(), startDate.get(Calendar.YEAR),
-                        startDate.get(Calendar.MONTH), startDate.get(Calendar.DATE),
-                        times.getStartHour(), times.getStartMinute(), times.getEndHour(),
-                        times.getEndMinute(), recurrence, stopDate.get(Calendar.YEAR),
-                        stopDate.get(Calendar.MONTH), stopDate.get(Calendar.DATE)));
+                        startDate.get(Calendar.MONTH)+1, startDate.get(Calendar.DATE),
+                        times.getStartHour(), Utils.getTwoDigitNumber(times.getStartMinute()), times.getEndHour(),
+                        Utils.getTwoDigitNumber(times.getEndMinute()), recurrence, stopDate.get(Calendar.YEAR),
+                        stopDate.get(Calendar.MONTH)+1, stopDate.get(Calendar.DATE)));
             }
         }
         
-        // Add user_events
+        // Add users_events
         stmt.execute(String.format("insert into users_events (user_id, event_id) values ('%s', %d)",
                                    user.getName(), eventID));
         for (User attendee : attendees) {
-            stmt.execute(String.format("insert into user_events (user_id, event_id) values ('%s', %d)",
+            stmt.execute(String.format("insert into users_events (user_id, event_id) values ('%s', %d)",
                                        attendee.getName(), eventID));
         }
         
@@ -247,7 +246,7 @@ public abstract class SQL {
     
     public static void createUser(User newUser) {
         try {
-            stmt.execute(String.format("insert into users (user_id, password, avail_start, avail_end) values ('%s', '%s', '%d:%d', '%d:%d')",
+            stmt.execute(String.format("insert into users (user_id, password, avail_start, avail_end) values ('%s', '%s', '%d:%s', '%d:%s')",
                                        newUser.getName(), newUser.getPassword(),
                                        newUser.getDailyAvailability().getStartHour(),
                                        newUser.getDailyAvailability().getStartMinute(),
@@ -271,18 +270,18 @@ public abstract class SQL {
         try {
             // Update event
             if (recurrence == 0) {
-                stmt.execute(String.format("update events set title='%s', location='%s', start_date='%d-%d-%d', start_time='%d:%d', end_time='%d:%d', recurrence=0 where event_id = %d",
+                stmt.execute(String.format("update events set title='%s', location='%s', start_date='%d-%d-%d', start_time='%d:%s', end_time='%d:%s', recurrence=0 where event_id = %d",
                                            name, location, startDate.get(Calendar.YEAR),
-                                           startDate.get(Calendar.MONTH), startDate.get(Calendar.DATE),
-                                           times.getStartHour(), times.getStartMinute(), times.getEndHour(),
-                                           times.getEndMinute(), eventID));
+                                           startDate.get(Calendar.MONTH)+1, startDate.get(Calendar.DATE),
+                                           times.getStartHour(), Utils.getTwoDigitNumber(times.getStartMinute()), times.getEndHour(),
+                                           Utils.getTwoDigitNumber(times.getEndMinute()), eventID));
             } else {
-                stmt.execute(String.format("update events set title='%s', location='%s', start_date='%d-%d-%d', start_time='%d:%d', end_time='%d:%d', recurrence=&d, stop_date='%d-%d-%d' where event_id = %d",
+                stmt.execute(String.format("update events set title='%s', location='%s', start_date='%d-%d-%d', start_time='%d:%s', end_time='%d:%s', recurrence=%d, stop_date='%d-%d-%d' where event_id = %d",
                                            name, location, startDate.get(Calendar.YEAR),
-                                           startDate.get(Calendar.MONTH), startDate.get(Calendar.DATE),
-                                           times.getStartHour(), times.getStartMinute(), times.getEndHour(),
-                                           times.getEndMinute(), recurrence, endDate.get(Calendar.YEAR),
-                                           endDate.get(Calendar.MONTH), endDate.get(Calendar.DATE), eventID));
+                                           startDate.get(Calendar.MONTH)+1, startDate.get(Calendar.DATE),
+                                           times.getStartHour(), Utils.getTwoDigitNumber(times.getStartMinute()), times.getEndHour(),
+                                           Utils.getTwoDigitNumber(times.getEndMinute()), recurrence, endDate.get(Calendar.YEAR),
+                                           endDate.get(Calendar.MONTH)+1, endDate.get(Calendar.DATE), eventID));
             }
             
             // Update user_event
@@ -333,7 +332,7 @@ public abstract class SQL {
     
     public static void updateUser(User newUser) {
         try {
-            stmt.execute(String.format("update users set password='%s', avail_start='%d:%d', avail_end='%d:%d' where user_id='%s'",
+            stmt.execute(String.format("update users set password='%s', avail_start='%d:%s', avail_end='%d:%s' where user_id='%s'",
                                        newUser.getPassword(),
                                        newUser.getDailyAvailability().getStartHour(),
                                        newUser.getDailyAvailability().getStartMinute(),
@@ -370,5 +369,24 @@ public abstract class SQL {
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
+    }
+    
+    public static User checkLoginCredentials(String username, String password){
+        User user = null;
+        try {
+            ResultSet results = stmt.executeQuery(String.format("select * from users where user_id='%s' and password='%s'", username, password));
+            if (results.next()){
+                Time start = results.getTime("avail_start");
+                Time end = results.getTime("avail_end");
+                user = new User(username, password, new TimeBlock(start.getHours(), start.getMinutes(), end.getHours(), end.getMinutes()));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return user;
     }
 }

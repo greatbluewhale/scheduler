@@ -54,8 +54,9 @@ public class LoginPage extends PagePanel implements ActionListener {
         // If the event originated from passwordField or submit button, then try to log in
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
-        if (username.compareTo(SchedulerMain.testUsername) == 0 && password.compareTo(SchedulerMain.testPassword) == 0){
-            SchedulerMain.application.logIn(new User(usernameField.getText(), new String(passwordField.getPassword())));
+        User user = SQL.checkLoginCredentials(username, password);
+        if (user != null){
+            SchedulerMain.application.logIn(user);
         } else {
             invalidLogin.setText(INVALID_LOGIN_TEXT);
         }

@@ -50,4 +50,8 @@ public class Utils {
         }
         return current;
     }
+    
+    public static String getTwoDigitNumber(int number){
+        return (number<10) ? "0"+number : ""+number;
+    }
 }

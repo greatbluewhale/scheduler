@@ -38,8 +38,10 @@ public abstract class RecurringEvent extends Event {
                           int startHour, int startMinute, int endHour, int endMinute, Calendar startInterval, Calendar endInterval) throws Exception {
         super(name, location, attendees, creator);
         time = new TimeBlock(startHour, startMinute, endHour, endMinute);
-        this.startInterval = startInterval;
-        this.endInterval = endInterval;
+        this.startInterval = new GregorianCalendar();
+        this.endInterval = new GregorianCalendar();
+        this.startInterval.setTime(startInterval.getTime());
+        this.endInterval.setTime(endInterval.getTime());
     }
     
     public Calendar getIntervalStart() {
@@ -124,5 +126,17 @@ public abstract class RecurringEvent extends Event {
         }
         
         return list;
+    }
+    
+    public Calendar getStartEventCalendar(){
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(this.startInterval.getTime());
+        return cal;
+    }
+    
+    public Calendar getEndEventCalendar(){
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(this.endInterval.getTime());
+        return cal;
     }
 }

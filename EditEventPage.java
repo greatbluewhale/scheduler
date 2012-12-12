@@ -85,7 +85,8 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         locationPanel.add(locationField);
         
         attendeesPanel.add(new JLabel("Attendees:"));
-        attendeesList = new JList(/*Get ALL the users*/);
+        attendeesList = new JList();
+        attendeesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         attendeesPanel.add(attendeesList);
         
         datePanel.add(new JLabel("Start Date:"));
@@ -168,6 +169,7 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         titleField.setText("");
         locationField.setText("");
         attendeesList.clearSelection();
+        attendeesList.setListData(SchedulerMain.application.getOtherUsernames());
         
         monthDropDown.setSelectedIndex(today.get(Calendar.MONTH));
         dayField.setText(Integer.toString(today.get(Calendar.DATE)));
@@ -306,6 +308,12 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
                 title = titleField.getText();
                 location = locationField.getText();
                 
+                Object[] selectedListValues = attendeesList.getSelectedValues();
+                User[] attendees = new User[selectedListValues.length];
+                for (int i=0; i<selectedListValues.length; i++){
+                    attendees[i] = SchedulerMain.application.searchForUser(selectedListValues[i].toString());
+                }
+                
                 date = new GregorianCalendar();
                 startYear = Integer.parseInt(yearField.getText());
                 startMonth = monthDropDown.getSelectedIndex();
@@ -346,23 +354,23 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
                         endDate.set(endYear, endMonth, endDateNum, 23, 59);
                         switch (recurType) {
                         case DAILY:
-                            newEvent = new DailyRecurringEvent(title, location, null, current, startHour,
+                            newEvent = new DailyRecurringEvent(title, location, attendees, current, startHour,
                                                                startMin, endHour, endMin, date, endDate);
                             break;
                         case WEEKLY:
-                            newEvent = new WeeklyRecurringEvent(title, location, null, current, startHour,
+                            newEvent = new WeeklyRecurringEvent(title, location, attendees, current, startHour,
                                                                 startMin, endHour, endMin,
                                                                 date.get(Calendar.DAY_OF_WEEK), date,
                                                                 endDate);
                             break;
                         case MONTHLY_BY_DATE:
-                            newEvent = new MonthlyDateRecurringEvent(title, location, null, current,
+                            newEvent = new MonthlyDateRecurringEvent(title, location, attendees, current,
                                                                      startHour, startMin, endHour, endMin,
                                                                      date.get(Calendar.DATE), date,
                                                                      endDate);
                             break;
                         case MONTHLY_BY_DAY:
-                            newEvent = new MonthlyDayRecurringEvent(title, location, null, current, startHour,
+                            newEvent = new MonthlyDayRecurringEvent(title, location, attendees, current, startHour,
                                                                     startMin, endHour, endMin,
                                                                     date.get(Calendar.DAY_OF_WEEK),
                                                                     date.get(
@@ -370,7 +378,7 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
                                                                     date, endDate);
                             break;
                         case YEARLY:
-                            newEvent = new YearlyRecurringEvent(title, location, null, current, startHour,
+                            newEvent = new YearlyRecurringEvent(title, location, attendees, current, startHour,
                                                                 startMin, endHour, endMin,
                                                                 date.get(Calendar.MONTH),
                                                                 date.get(Calendar.DATE), date, endDate);
@@ -384,7 +392,7 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
                         endDate = new GregorianCalendar();
                         endDate.set(startYear, startMonth, startDateNum, endHour, endMin);
                         
-                        newEvent = new OneTimeEvent(title, location, null, current, date.getTime(),
+                        newEvent = new OneTimeEvent(title, location, attendees, current, date.getTime(),
                                                     endDate.getTime());
                     }
                     
@@ -402,6 +410,8 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
             }
             catch (Exception ex) {
                 messageLabel.setText("Invalid Input.");
+                // TODO: temp
+                ex.printStackTrace();
             }
         } else if (e.getSource() == cancel) {
             SchedulerMain.application.showMonthlyView();

@@ -6,6 +6,7 @@
  */
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -70,5 +71,19 @@ public abstract class Event {
      */
     public String getLocation(){
         return location;
+    }
+    
+    public User[] getAttendees(){
+        return attendees;
+    }
+    
+    public abstract Calendar getStartEventCalendar();
+    
+    public abstract TimeBlock getTimes();
+    
+    public abstract int getRecurrence();
+    
+    public Calendar getEndEventCalendar(){
+        return null;
     }
 }

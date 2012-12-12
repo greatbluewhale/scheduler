@@ -62,4 +62,9 @@ public class YearlyRecurringEvent extends RecurringEvent {
     protected void nextEvent(Calendar time) {
         time.add(Calendar.YEAR, 1);
     }
+
+    @Override
+    public int getRecurrence() {
+        return 5;
+    }
 }
