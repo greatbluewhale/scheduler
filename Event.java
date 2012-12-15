@@ -35,6 +35,7 @@ public abstract class Event {
         this.location = location;
         this.attendees = attendees;
         this.creator = creator;
+        eventID = -1;
     }
     
     public void setEventID(int eventID) {
