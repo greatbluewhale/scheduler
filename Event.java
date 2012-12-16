@@ -78,6 +78,20 @@ public abstract class Event {
         return attendees;
     }
     
+    /**
+     * Takes an array of usernames and sets it as the list of attendees
+     * @param attendeeIDs
+     */
+    public void setAttendees(ArrayList<String> attendeeIDs) {
+        User[] attendees = new User[attendeeIDs.size()];
+        int i=0;
+        for (String attendee : attendeeIDs) {
+            attendees[i] = SchedulerMain.application.searchForUser(attendee);
+            i++;
+        }
+        this.attendees = attendees;
+    }
+    
     public abstract Calendar getStartEventCalendar();
     
     public abstract TimeBlock getTimes();

@@ -396,7 +396,9 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
                                                     endDate.getTime());
                     }
                     
+                    
                     if (oldEvent != null){
+                        newEvent.setEventID(oldEvent.getEventID());
                         SchedulerMain.application.editEvent(oldEvent, newEvent);
                     } else {
                         SchedulerMain.application.addEvent(newEvent);
@@ -406,7 +408,6 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
                 } else {
                     messageLabel.setText(errorMessage);
                 }
-                
             }
             catch (Exception ex) {
                 messageLabel.setText("Invalid Input.");

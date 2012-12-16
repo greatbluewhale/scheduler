@@ -177,6 +177,8 @@ public class ViewEventPage extends PagePanel implements ActionListener {
         date.setText((startDate.get(Calendar.MONTH)+1) + "/" + startDate.get(Calendar.DATE) + "/" +
                      startDate.get(Calendar.YEAR));
         times.setText(timeBlock.toString());
+        
+        edit.setEnabled(SQL.isCreator(currentEvent));
     }
     
     @Override
