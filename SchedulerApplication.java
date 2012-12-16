@@ -20,7 +20,7 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     private final String ENABLE_WEATHER = "Show Weather on Calendar";
     private final String DISABLE_WEATHER = "Hide Weather on Calendar";
     
-    private boolean isWeatherEnabled = true;
+    private boolean isWeatherEnabled = false;
     
     private JPanel mainPanel = new JPanel();
     private CardLayout cardLayout = new CardLayout();
@@ -28,7 +28,7 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     private JMenuItem addEvent = new JMenuItem("Create Event");
     private JMenuItem viewUser = new JMenuItem("View User Info");
     private JMenuItem viewCalendar = new JMenuItem("View Calendar");
-    private JMenuItem weatherItem = new JMenuItem(DISABLE_WEATHER);
+    private JMenuItem weatherItem = new JMenuItem(ENABLE_WEATHER);
     
     private enum Page {
         LOGIN_PAGE(0), MONTHLY_VIEW_PAGE(1), EDIT_EVENT_PAGE(2), VIEW_EVENT_PAGE(3), VIEW_USER_PAGE(4);
@@ -61,11 +61,8 @@ public class SchedulerApplication extends JFrame implements ActionListener {
         options.add(addEvent);
         options.add(viewUser);
         options.add(viewCalendar);
+        options.add(weatherItem);
         menuBar.add(options);
-        
-        JMenu features = new JMenu("Features");
-        features.add(weatherItem);
-        menuBar.add(features);
         
         setJMenuBar(menuBar);
         
@@ -106,6 +103,7 @@ public class SchedulerApplication extends JFrame implements ActionListener {
     
     public void logIn(User user){
         currentUser = SQL.user = user;
+        allUsers = SQL.getAllUsers();
         ArrayList<Event> events = SQL.pullEvents();
         Iterator<Event> it = events.iterator();
         while (it.hasNext()){

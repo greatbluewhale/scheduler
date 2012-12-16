@@ -111,6 +111,7 @@ public class ViewEventPage extends PagePanel implements ActionListener {
         if (attendeesArray != null && attendeesArray.length > 0){
             attendeesText.append(attendeesArray[0].getName());
             for (int i=1; i<attendeesArray.length; i++){
+                attendeesText.append(", ");
                 attendeesText.append(attendeesArray[i].getName());
             }
         } else {

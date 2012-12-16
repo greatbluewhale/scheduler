@@ -260,17 +260,20 @@ public abstract class SQL {
         return eventID;
     }
     
-    public static void createUser(User newUser) {
+    public static boolean createUser(User newUser) {
+        boolean success = false;
         try {
             stmt.execute(String.format("insert into users (user_id, password, avail_start, avail_end) values ('%s', '%s', '%d:%s', '%d:%s')",
                                        newUser.getName(), newUser.getPassword(),
                                        newUser.getDailyAvailability().getStartHour(),
-                                       newUser.getDailyAvailability().getStartMinute(),
+                                       Utils.getTwoDigitNumber(newUser.getDailyAvailability().getStartMinute()),
                                        newUser.getDailyAvailability().getEndHour(),
-                                       newUser.getDailyAvailability().getEndMinute()));
+                                       Utils.getTwoDigitNumber(newUser.getDailyAvailability().getEndMinute())));
+            success = true;
         } catch (SQLException sqle) {
-            sqle.printStackTrace();
+            // suppress (we might have tried to create a user that already exists)
         }
+        return success;
     }
     
     public static void updateEvent(int eventID, String name, String location, Calendar startDate, TimeBlock times, int recurrence, Calendar endDate, User[] attendees) {
