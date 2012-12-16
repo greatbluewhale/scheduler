@@ -23,8 +23,64 @@ public abstract class SQL {
     
     static {
         try {
-            dbConnection = DriverManager.getConnection("jdbc:derby://localhost:1527/scheduler", "root", "root");
+            Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+            dbConnection = DriverManager.getConnection("jdbc:derby:demoDB;create=true");
             stmt = dbConnection.createStatement();
+            
+            // Create tables
+            try {
+                stmt.execute("create table users (\r\n" + 
+                        "    user_id varchar(32) not null,\r\n" + 
+                        "    password varchar(32) not null,\r\n" + 
+                        "    avail_start time,\r\n" + 
+                        "    avail_end time,\r\n" + 
+                        "    constraint pk_users primary key (user_id)\r\n" + 
+                        ")");
+                
+                        
+                stmt.execute("create table events (\r\n" + 
+                        "    event_id integer not null,\r\n" + 
+                        "    title varchar(32) not null,\r\n" + 
+                        "    location varchar(32),\r\n" + 
+                        "    user_id varchar(32) not null,\r\n" + 
+                        "    start_date date not null,\r\n" + 
+                        "    start_time time not null,\r\n" + 
+                        "    end_time time not null,\r\n" + 
+                        "    recurrence smallint not null,\r\n" + 
+                        "    stop_date date,\r\n" + 
+                        "    constraint pk_events primary key (event_id),\r\n" + 
+                        "    constraint fk_user_id foreign key (user_id) references users (user_id)\r\n" + 
+                        ")");
+                
+                stmt.execute("create table users_events (\r\n" + 
+                        "    user_id varchar(32) not null,\r\n" + 
+                        "    event_id integer not null,\r\n" + 
+                        "    constraint pk_users_events primary key (user_id, event_id),\r\n" + 
+                        "    constraint fk_creator_id foreign key (user_id) references users (user_id),\r\n" + 
+                        "    constraint fk_event_id foreign key (event_id) references events (event_id)\r\n" + 
+                        ")");
+            } catch (Exception e) {
+                // suppress (this will be thrown if the tables have already been created)
+            }
+            try {
+                stmt.execute("insert into users (user_id, password, avail_start, avail_end)\r\n" + 
+                		"    values ('nickdyszel', 'password', '9:00', '20:00')");
+            } catch (Exception e) {
+                // suppress
+            }
+            try {
+                stmt.execute("insert into users (user_id, password, avail_start, avail_end)\r\n" + 
+                		"    values ('Bob', 'password', '8:00', '18:00')");
+            } catch (Exception e) {
+                // suppress
+            }
+            try {
+                stmt.execute("insert into users (user_id, password, avail_start, avail_end)\r\n" + 
+                        "    values ('Amu', 'password', '8:00', '18:00')");
+            } catch (Exception e) {
+                // suppress
+            }
+            
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -81,6 +137,8 @@ public abstract class SQL {
                         break;
                     case 1:
                         endDate.setTime(results.getDate("stop_date"));
+                        endDate.set(Calendar.HOUR_OF_DAY, 23);
+                        endDate.set(Calendar.MINUTE, 59);
                         newEvent = new DailyRecurringEvent(results.getString("title"),
                                                         results.getString("location"),
                                                         null,
@@ -94,6 +152,8 @@ public abstract class SQL {
                         break;
                     case 2:
                         endDate.setTime(results.getDate("stop_date"));
+                        endDate.set(Calendar.HOUR_OF_DAY, 23);
+                        endDate.set(Calendar.MINUTE, 59);
                         newEvent = new WeeklyRecurringEvent(results.getString("title"),
                                                          results.getString("location"),
                                                          null,
@@ -108,6 +168,8 @@ public abstract class SQL {
                         break;
                     case 3:
                         endDate.setTime(results.getDate("stop_date"));
+                        endDate.set(Calendar.HOUR_OF_DAY, 23);
+                        endDate.set(Calendar.MINUTE, 59);
                         newEvent = new MonthlyDateRecurringEvent(results.getString("title"),
                                                               results.getString("location"),
                                                               null,
@@ -122,6 +184,8 @@ public abstract class SQL {
                         break;
                     case 4:
                         endDate.setTime(results.getDate("stop_date"));
+                        endDate.set(Calendar.HOUR_OF_DAY, 23);
+                        endDate.set(Calendar.MINUTE, 59);
                         newEvent = new MonthlyDayRecurringEvent(results.getString("title"),
                                                              results.getString("location"),
                                                              null,
@@ -137,6 +201,8 @@ public abstract class SQL {
                         break;
                     case 5:
                         endDate.setTime(results.getDate("stop_date"));
+                        endDate.set(Calendar.HOUR_OF_DAY, 23);
+                        endDate.set(Calendar.MINUTE, 59);
                         newEvent = new YearlyRecurringEvent(results.getString("title"),
                                                          results.getString("location"),
                                                          null,
@@ -373,7 +439,7 @@ public abstract class SQL {
                     "select user_id from events where event_id=%d", eventID));
             results.next();
             creator = results.getString("user_id");
-            if (creator.equals(user)) {
+            if (creator.equals(user.getName())) {
                 // creator can delete event
                 stmt.execute(String.format("delete from users_events where event_id=%d", eventID));
                 stmt.execute(String.format("delete from events where event_id=%d", eventID));

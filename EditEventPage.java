@@ -353,6 +353,8 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
                     } else if (!Utils.dateIsLessThan(startYear, startMonth, startDateNum, endYear, endMonth, endDateNum)){
                         errorMessage = "Start Date must come before End Date";
                     }
+                } else if (title.indexOf('\'') != -1 || location.indexOf('\'') != -1){
+                    errorMessage = "Title/Location cannot have any single quotes.";
                 }
                 
                 // If errorMessage is null, then there is no error
