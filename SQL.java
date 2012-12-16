@@ -367,9 +367,22 @@ public abstract class SQL {
     }
     
     public static void deleteEvent(int eventID) {
-        try {           
-            stmt.execute(String.format("delete from users_events where event_id=%d", eventID));
-            stmt.execute(String.format("delete from events where event_id=%d", eventID));
+        String creator;
+        try {
+            ResultSet results = stmt.executeQuery(String.format(
+                    "select user_id from events where event_id=%d", eventID));
+            results.next();
+            creator = results.getString("user_id");
+            if (creator.equals(user)) {
+                // creator can delete event
+                stmt.execute(String.format("delete from users_events where event_id=%d", eventID));
+                stmt.execute(String.format("delete from events where event_id=%d", eventID));
+            } else {
+                // only remove user from list of attendees
+                stmt.execute(String.format(
+                        "delete from users_events where event_id=%d and user_id='%s'",
+                        eventID, user.getName()));
+            }
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }

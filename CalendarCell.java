@@ -19,14 +19,13 @@ public class CalendarCell extends JPanel implements MouseListener {
     private static final int DATE_SIZE = 20;
     
     private static JPopupMenu popup;
+    private static JPopupMenu popupAlt;
     private static EventLabel selectedEventLabel;
-    
-    private static final JMenuItem editEvent;
     
     // This static initialization block is executed exactly once (at the start of the program)
     static {
         popup = new JPopupMenu();
-        editEvent = new JMenuItem("Edit Event");
+        final JMenuItem editEvent = new JMenuItem("Edit Event");
         popup.add(editEvent);
         final JMenuItem deleteEvent = new JMenuItem("Delete Event");
         popup.add(deleteEvent);
@@ -44,6 +43,21 @@ public class CalendarCell extends JPanel implements MouseListener {
         };
         editEvent.addActionListener(listener);
         deleteEvent.addActionListener(listener);
+        
+        popupAlt = new JPopupMenu();
+        final JMenuItem deleteEventAlt = new JMenuItem("Delete Event");
+        popupAlt.add(deleteEventAlt);
+        ActionListener listenerAlt = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                RecurringEvent parent = selectedEventLabel.event.getParent();
+                Event event = (parent != null) ? parent : selectedEventLabel.event;
+                if (e.getSource() == deleteEventAlt) {
+                    SchedulerMain.application.showDeletePopup(event);
+                }
+            }
+        };
+        deleteEventAlt.addActionListener(listenerAlt);
     }
     
     private ArrayList<EventLabel> list = new ArrayList<EventLabel>(0);
@@ -121,11 +135,16 @@ public class CalendarCell extends JPanel implements MouseListener {
                 EventLabel el = it.next();
                 if (e.getSource() == el.label){
                     selectedEventLabel = el;
-                    editEvent.setEnabled(el.event.creator.getName().equals(SQL.user.getName()));
                     break;
                 }
             }
-            popup.show(e.getComponent(), e.getX(), e.getY());
+            RecurringEvent parent = selectedEventLabel.event.getParent();
+            Event event = (parent != null) ? parent : selectedEventLabel.event;
+            if (SQL.isCreator(event)) {
+                popup.show(e.getComponent(), e.getX(), e.getY());
+            } else {
+                popupAlt.show(e.getComponent(), e.getX(), e.getY());
+            }
         }
     }
     
