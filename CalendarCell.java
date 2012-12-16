@@ -21,10 +21,12 @@ public class CalendarCell extends JPanel implements MouseListener {
     private static JPopupMenu popup;
     private static EventLabel selectedEventLabel;
     
+    private static final JMenuItem editEvent;
+    
     // This static initialization block is executed exactly once (at the start of the program)
     static {
         popup = new JPopupMenu();
-        final JMenuItem editEvent = new JMenuItem("Edit Event");
+        editEvent = new JMenuItem("Edit Event");
         popup.add(editEvent);
         final JMenuItem deleteEvent = new JMenuItem("Delete Event");
         popup.add(deleteEvent);
@@ -119,6 +121,7 @@ public class CalendarCell extends JPanel implements MouseListener {
                 EventLabel el = it.next();
                 if (e.getSource() == el.label){
                     selectedEventLabel = el;
+                    editEvent.setEnabled(el.event.creator.getName().equals(SQL.user.getName()));
                     break;
                 }
             }

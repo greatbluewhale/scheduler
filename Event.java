@@ -74,6 +74,10 @@ public abstract class Event {
         return location;
     }
     
+    public User getCreator() {
+        return creator;
+    }
+    
     public User[] getAttendees(){
         return attendees;
     }

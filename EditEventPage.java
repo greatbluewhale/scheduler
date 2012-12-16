@@ -401,6 +401,7 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
                         newEvent.setEventID(oldEvent.getEventID());
                         SchedulerMain.application.editEvent(oldEvent, newEvent);
                     } else {
+                        newEvent.setEventID(SQL.getNextEventID());
                         SchedulerMain.application.addEvent(newEvent);
                     }
                     SchedulerMain.application.showMonthlyView();
