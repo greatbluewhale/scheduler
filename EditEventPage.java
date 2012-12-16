@@ -12,6 +12,7 @@ import java.awt.event.*;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import javax.swing.*;
+import javax.swing.text.Position;
 
 /**
  * EditEventPage class to display panel for user to create/edit an event
@@ -207,6 +208,8 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
      * @throws Exception  invalid TimeBlock
      */
     public void setFields(Event eventToEdit) throws Exception {
+        User[] attendees = eventToEdit.getAttendees();
+        int newIndex;
         Calendar date = new GregorianCalendar();
         Calendar endDate = new GregorianCalendar();
         TimeBlock times;
@@ -215,6 +218,11 @@ public class EditEventPage extends PagePanel implements ActionListener, ItemList
         
         titleField.setText(eventToEdit.getName());
         locationField.setText(eventToEdit.getLocation());
+        
+        for (User attendee : attendees) {
+            newIndex = attendeesList.getNextMatch(attendee.getName(), 0, Position.Bias.Forward);
+            attendeesList.addSelectionInterval(newIndex, newIndex);
+        }
         
         if (eventToEdit instanceof OneTimeEvent) {
             date.setTime(((OneTimeEvent) eventToEdit).getStartDate());
